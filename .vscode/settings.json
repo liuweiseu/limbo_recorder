@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "hashpipe.h": "c",
+        "hashpipe_status.h": "c",
+        "databuf.h": "c"
+    }
+}
