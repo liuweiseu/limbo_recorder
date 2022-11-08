@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include "include/obs_data.h"
+#include "obs_data.h"
 
 void create_file(char *filename, FILE *fp){
     fp = fopen(filename,"w");

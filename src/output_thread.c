@@ -16,9 +16,9 @@
 #include <errno.h>
 
 #include "hashpipe.h"
-#include "include/databuf.h"
-#include "include/obs_redis.h"
-#include "include/obs_data.h"
+#include "databuf.h"
+#include "obs_redis.h"
+#include "obs_data.h"
 
 static void create_filename(char *filename, unsigned int pkt_type){
     time_t timenow;
@@ -71,7 +71,7 @@ static void *run(hashpipe_thread_args_t * args)
         hgetu4(st.buf,"RECORD",&record_flag);
         if(record_flag){
             for(int i=0; i<sizeof(filename);i++)filename[i] = 0;
-            create_file(filename);
+            create_file(filename,0);
         }
 
         output_databuf_set_free(db,block_idx);

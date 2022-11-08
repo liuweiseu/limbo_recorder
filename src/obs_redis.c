@@ -1,7 +1,8 @@
+#include <unistd.h>
 #include <hiredis/hiredis.h>
 #include "hashpipe.h"
 
-#include "include/obs_redis.h"
+#include "obs_redis.h"
 //----------------------------------------------------------
 static redisContext * redis_connect(char *hostname, int port) {
 //----------------------------------------------------------
@@ -103,15 +104,15 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         }
         exit(1);
     }
-	rv = s6_redis_get(c_observatory, &reply,"AUTH fast");
+	rv = redis_get(c_observatory, &reply,"AUTH fast");
 #endif
 
 	gethostname(computehostname, sizeof(computehostname));
-
+    
 	// Get observatory data
 	// RA and DEC gathered by name rather than a looped redis query so that all meta data is of a 
 	// single point in time
-	if(!rv) rv = s6_redis_get(c_observatory, &reply,"hmget OBS_SETTING TimeStamp    \
+	if(!rv) rv = redis_get(c_observatory, &reply,"hmget OBS_SETTING TimeStamp    \
                                                                        SampleFreq   \
                                                                        AccLen       \
                                                                        FFTShift     \
@@ -132,14 +133,14 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         obs_settings->FFTSHITF  = atoi(reply->element[3]->str);
         obs_settings->SCALING   = atoi(reply->element[4]->str);
         obs_settings->SPECCOEFF = atoi(reply->element[5]->str);
-        obs_settings->ACCLEN[0] = atoi(reply->element[6]->str);
-        obs_settings->ACCLEN[1] = atoi(reply->element[7]->str);
-        obs_settings->ACCLEN[2] = atoi(reply->element[8]->str);
-        obs_settings->ACCLEN[3] = atoi(reply->element[9]->str);
-        obs_settings->ACCLEN[4] = atoi(reply->element[10]->str);
-        obs_settings->ACCLEN[5] = atoi(reply->element[11]->str);
-        obs_settings->ACCLEN[6] = atoi(reply->element[12]->str);
-        obs_settings->ACCLEN[7] = atoi(reply->element[13]->str);
+        obs_settings->ADCDELAY[0] = atoi(reply->element[6]->str);
+        obs_settings->ADCDELAY[1] = atoi(reply->element[7]->str);
+        obs_settings->ADCDELAY[2] = atoi(reply->element[8]->str);
+        obs_settings->ADCDELAY[3] = atoi(reply->element[9]->str);
+        obs_settings->ADCDELAY[4] = atoi(reply->element[10]->str);
+        obs_settings->ADCDELAY[5] = atoi(reply->element[11]->str);
+        obs_settings->ADCDELAY[6] = atoi(reply->element[12]->str);
+        obs_settings->ADCDELAY[7] = atoi(reply->element[13]->str);
 	}
    
     if(c) redisFree(c);       // TODO do I really want to free each time?

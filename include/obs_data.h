@@ -14,9 +14,9 @@ typedef struct obs_header{
     unsigned int ADCDELAY[8];
 }obs_header_t;
 
-inline void create_file(char *filename, FILE *fp);
-inline int write_header(FILE *fp, obs_header_t *obs_header);
-inline int write_data(FILE *fp, void *data, int nbytes);
-inline void close_file(FILE *fp);
+void create_file(char *filename, FILE *fp);
+int write_header(FILE *fp, obs_header_t *obs_header);
+int write_data(FILE *fp, void *data, int nbytes);
+void close_file(FILE *fp);
 
 #endif

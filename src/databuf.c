@@ -13,7 +13,7 @@
 #include <errno.h>
 #include <time.h>
 
-#include "include/databuf.h"
+#include "databuf.h"
 
 
 hashpipe_databuf_t *input_databuf_create(int instance_id, int databuf_id)

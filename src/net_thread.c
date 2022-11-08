@@ -18,7 +18,7 @@
 #include <errno.h>
 
 #include "hashpipe.h"
-#include "include/databuf.h"
+#include "databuf.h"
 
 #define PKTSOCK_BYTES_PER_FRAME (8192)
 #define PKTSOCK_FRAMES_PER_BLOCK (512)
@@ -122,8 +122,8 @@ static void *run(hashpipe_thread_args_t * args)
 
     // Get pktsock from args
 	struct hashpipe_pktsock * p_ps = (struct hashpipe_pktsock*)args->user_data;
-	pthread_cleanup_push(free, p_ps);
-	pthread_cleanup_push((void (*)(void *))hashpipe_pktsock_close, p_ps);
+	//pthread_cleanup_push(free, p_ps);
+	//pthread_cleanup_push((void (*)(void *))hashpipe_pktsock_close, p_ps);
 
     // Drop all packets to date
 	unsigned char *p_frame;
@@ -225,7 +225,7 @@ static void *run(hashpipe_thread_args_t * args)
 		hashpipe_status_unlock_safe(&st);
 
         // Mark block as full
-        if(HSD_input_databuf_set_filled(db, block_idx) != HASHPIPE_OK){
+        if(input_databuf_set_filled(db, block_idx) != HASHPIPE_OK){
             hashpipe_error(__FUNCTION__, "error waiting for databuf filled call");
             pthread_exit(NULL);
         }
