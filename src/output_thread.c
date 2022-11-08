@@ -20,8 +20,15 @@
 #include "include/obs_redis.h"
 #include "include/obs_data.h"
 
-static void create_filename(char *filename){
-
+static void create_filename(char *filename, unsigned int pkt_type){
+    time_t timenow;
+    struct tm *tm_p;
+    tm_p = localtime(&timenow);
+    sprintf(filename,"%4d%2d%2d%2d%2d%2d");
+#ifdef DEBUG
+    //fprintf(stdout,"%s\n",filename);
+    printf("%s\n", filename);    
+#endif
 }
 
 static void *run(hashpipe_thread_args_t * args)
@@ -33,7 +40,8 @@ static void *run(hashpipe_thread_args_t * args)
     const char * status_key = args->thread_desc->skey;
     int c,rv;
     int block_idx = 0;
-    
+    uint32_t record_flag = 0;
+    char filename[128]={0};
     /* Main loop */
     while (run_threads()) {
 
@@ -59,7 +67,13 @@ static void *run(hashpipe_thread_args_t * args)
         hashpipe_status_lock_safe(&st);
         hputs(st.buf, status_key, "processing");
         hashpipe_status_unlock_safe(&st);
-	
+
+        hgetu4(st.buf,"RECORD",&record_flag);
+        if(record_flag){
+            for(int i=0; i<sizeof(filename);i++)filename[i] = 0;
+            create_file(filename);
+        }
+
         output_databuf_set_free(db,block_idx);
         block_idx = (block_idx + 1) % db->header.n_block;
     }

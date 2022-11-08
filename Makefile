@@ -1,14 +1,15 @@
 CC          = gcc
 HPDEMO_LIB_CCFLAGS     = -g -O3 -fPIC -shared -lstdc++ -msse4 \
-                     -I. -I$(CUDA_DIR)/include -I/usr/local/include \
-                     -L. -L/usr/local/lib \
-                     -lhashpipe -lrt -lm
-HPDEMO_LIB_TARGET   = demo1_hashpipe.so
-HPDEMO_LIB_SOURCES  = demo1_net_thread.c \
-		      demo1_gpu_thread.c \
-		      demo1_output_thread.c \
-                      demo1_databuf.c
-HPDEMO_LIB_INCLUDES = demo1_databuf.h
+                     	-I./include  -I/usr/local/include \
+                     	-L. -L/usr/local/lib \
+                     	-lhashpipe -lrt -lm
+HPDEMO_LIB_TARGET   = hashpipe.so
+HPDEMO_LIB_SOURCES  = net_thread.c 		\
+		      		  output_thread.c 	\
+                      databuf.c			\
+					  obs_data.c		\
+					  obs_redis.c		
+HPDEMO_LIB_INCLUDES = databuf.h
 
 all: $(HPDEMO_LIB_TARGET)
 
@@ -29,4 +30,3 @@ install-lib: $(HPDEMO_LIB_TARGET)
 install: install-lib
 
 .PHONY: all tags clean install install-lib
-# vi: set ts=8 noet :

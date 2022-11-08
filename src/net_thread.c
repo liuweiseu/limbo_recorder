@@ -47,6 +47,7 @@ static int init(hashpipe_thread_args_t * args){
     hputs(st.buf, "BINDHOST", bindhost);
 	hputi4(st.buf, "BINDPORT", bindport);
     hputi8(st.buf, "NPACKETS", 0);
+    hputu4(st.buf, "RECORD", 0);
 
     // Unlock shared buffer once complete.
     hashpipe_status_unlock_safe(&st);
@@ -103,13 +104,16 @@ static void *run(hashpipe_thread_args_t * args)
  
     uint8_t* pkt_data;
     struct timeval nowTime;             // Current NTP UTC time
-    uint32_t id;
-    unsigned int pktsock_pkts = 0;      // Stats counter for socket packet
-    unsigned int pktsock_drops = 0;     // Stats counter for dropped socket packet
-    unsigned int pktsock_missed = 0;    // Stats counter for packets loss
-
+    uint32_t id;                        //snap id
+    uint32_t pkt_type = 0;              // pkt type, 0: spectra; 1: voltage(500MSps); 2: voltage(1000MSps)
+    uint32_t pktsock_pkts = 0;          // Stats counter for socket packet
+    uint32_t pktsock_drops = 0;         // Stats counter for dropped socket packet
+    uint32_t pktsock_loss = 0;          // Stats counter for packets loss
+    int64_t pktsock_cnt = 0;            // the bit witdth of the cnt value is 56bits 
+    int64_t pktsock_pre_cnt = 0;
+    uint8_t first_pkt = 0;
     uint32_t npackets = 0;              // number of received packets
-    int bindport = 0;
+    int32_t bindport = 0;
 
     hashpipe_status_lock_safe(&st);
 	hgeti4(st.buf, "BINDPORT", &bindport);
@@ -131,9 +135,6 @@ static void *run(hashpipe_thread_args_t * args)
         // Update the info of the buffer
         hashpipe_status_lock_safe(&st);
         hputs(st.buf, status_key, "waiting");
-        hputi4(st.buf, "NETBKOUT", block_idx);
-        hputi8(st.buf,"NETMCNT",mcnt);
-        hputi8(st.buf, "NPACKETS", npackets);
         hashpipe_status_unlock_safe(&st);
 
         // Wait for data
@@ -156,7 +157,7 @@ static void *run(hashpipe_thread_args_t * args)
         hashpipe_status_lock_safe(&st);
         hputs(st.buf, status_key, "receiving");
         hashpipe_status_unlock_safe(&st);
-	
+
         for(int i = 0; i < SPECTRAS_PER_BLOCK; i++)
         {
              // Recv all of the UDP packets from PKTSOCK
@@ -193,7 +194,16 @@ static void *run(hashpipe_thread_args_t * args)
             *(pkt_data+2) = tmp;
             // the first 16 bytes are used for sec and usec
             memcpy(db->block[block_idx].spectra+i*PKT_SIZE+16, pkt_data, PKT_SIZE);
+            // get the cnt value from the packet
+            pktsock_cnt = *((uint64_t *)pkt_data);
+            if(first_pkt == 0){
+                // if this is the first packet, we don't have a previous packet
+                pktsock_pre_cnt = pktsock_cnt - 1;
+                first_pkt = 1;
+            }
+            pktsock_loss += pktsock_pre_cnt + 1 - pktsock_cnt;
 
+            pktsock_pre_cnt = (pktsock_cnt==pow(2,CNT_BITWIDTH)-1)?-1:pktsock_cnt;
             npackets++;
 
             // Release the hashpipe frame back to the kernel to gather data
@@ -205,9 +215,13 @@ static void *run(hashpipe_thread_args_t * args)
 
         hashpipe_status_lock_safe(&st);
         hputu4(st.buf, "SNAP_ID", id);
+        hputu4(st.buf, "PKTTYPE", pkt_type);
+        hputi4(st.buf, "NETBKOUT", block_idx);
+        hputi8(st.buf, "NETMCNT",mcnt);    
 		hputu8(st.buf, "NPACKETS", npackets);	
 		hputu4(st.buf, "NETRECV",  pktsock_pkts);
 		hputu4(st.buf, "NETDROPS", pktsock_drops);
+        hputi8(st.buf, "PKTLOSS",pktsock_loss);
 		hashpipe_status_unlock_safe(&st);
 
         // Mark block as full

@@ -3,6 +3,8 @@
 #include "hashpipe.h"
 #include "hashpipe_databuf.h"
 
+#define DEBUG                   0
+
 #define CACHE_ALIGNMENT         8
 #define N_INPUT_BLOCKS          8 
 #define N_OUTPUT_BLOCKS         8
@@ -10,11 +12,13 @@
 #define SPECTRA_SIZE            2048
 #define SPECTRAS_PER_BLOCK      128*1024
 #define PKT_SIZE                SPECTRA_SIZE * sizeof(unsigned short) +  8
-#define FRAME_SIZE              PKT_SIZE + 8*2               
+#define FRAME_SIZE              PKT_SIZE + 8*2   
+#define CNT_BITWIDTH            56
+
 /* INPUT BUFFER STRUCTURES
   */
 typedef struct input_block_header {
-   uint64_t mcnt;              
+   uint64_t mcnt;            
 } input_block_header_t;
 
 typedef uint8_t input_header_cache_alignment[
@@ -23,7 +27,7 @@ typedef uint8_t input_header_cache_alignment[
 
 typedef struct pkt {
     uint64_t cnt;  //id and cnt are combined to a 64-bit data, id-8bit + cnt-56bit
-    uint8_t spectra[PKT_FRAME_SIZE];
+    uint8_t spectra[SPECTRA_SIZE];
 } pkt_t;
 
 typedef struct frame {
