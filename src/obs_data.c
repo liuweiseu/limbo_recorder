@@ -1,11 +1,13 @@
 #include<stdio.h>
 #include "obs_data.h"
 
-void create_file(char *filename, FILE *fp){
+static FILE *fp;
+
+void create_file(char *filename){
     fp = fopen(filename,"w");
 }
 
-int write_header(FILE *fp, obs_header_t *obs_header){
+int write_header(obs_header_t *obs_header){
     fprintf(fp, "{\n");
     fprintf(fp, " \"Time\": %10f,        \
                   \"SampleFreq\": %4u,   \
@@ -20,7 +22,7 @@ int write_header(FILE *fp, obs_header_t *obs_header){
                   \"AdcDelay4\": %4u,    \
                   \"AdcDelay5\": %4u,    \
                   \"AdcDelay6\": %4u,    \
-                  \"AdcDelay7\": %4u,    \
+                  \"AdcDelay7\": %4u     \
                 }", obs_header->TIME,       \
                     obs_header->SAMPLEFREQ, \
                     obs_header->ACCLEN,     \
@@ -36,14 +38,14 @@ int write_header(FILE *fp, obs_header_t *obs_header){
                     obs_header->ADCDELAY[6],\
                     obs_header->ADCDELAY[7]
                     );
-    // we use the first 256 bytes for header
-    return fseek(fp, 256, SEEK_SET);
+    // we use the first 1024 bytes for header
+    return fseek(fp, 1024, SEEK_SET);
 }
 
-int write_data(FILE *fp, void *data, int nbytes){
-    fwrite(data, 1, nbytes, fp);
+int write_data(void *data, int nbytes){
+    fwrite((char *)data, 1, nbytes, fp);
 }
 
-void close_file(FILE *fp){
+void close_file(){
     fclose(fp);
 }

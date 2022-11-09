@@ -5,14 +5,17 @@
 
 #define DEBUG                   0
 
+#define REDIS_HOST              "localhost"
+#define REDIS_PORT              6379
+
 #define CACHE_ALIGNMENT         8
 #define N_INPUT_BLOCKS          8 
 #define N_OUTPUT_BLOCKS         8
 
 #define SPECTRA_SIZE            2048
-#define SPECTRAS_PER_BLOCK      128*1024
-#define PKT_SIZE                SPECTRA_SIZE * sizeof(unsigned short) +  8
-#define FRAME_SIZE              PKT_SIZE + 8*2   
+#define SPECTRAS_PER_BLOCK      4*1024
+#define PKT_SIZE                (SPECTRA_SIZE * sizeof(unsigned short) + 8)
+#define FRAME_SIZE              (PKT_SIZE + 8*2)   
 #define CNT_BITWIDTH            56
 
 /* INPUT BUFFER STRUCTURES
@@ -27,7 +30,7 @@ typedef uint8_t input_header_cache_alignment[
 
 typedef struct pkt {
     uint64_t cnt;  //id and cnt are combined to a 64-bit data, id-8bit + cnt-56bit
-    uint8_t spectra[SPECTRA_SIZE];
+    uint16_t spectra[SPECTRA_SIZE];
 } pkt_t;
 
 typedef struct frame {

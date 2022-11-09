@@ -14,9 +14,15 @@ typedef struct obs_header{
     unsigned int ADCDELAY[8];
 }obs_header_t;
 
-void create_file(char *filename, FILE *fp);
-int write_header(FILE *fp, obs_header_t *obs_header);
-int write_data(FILE *fp, void *data, int nbytes);
-void close_file(FILE *fp);
+typedef struct record_status{
+    char filename[128];
+    unsigned int file_created;
+    unsigned int recording;
+} record_status_t;
+
+void create_file(char *filename);
+int write_header(obs_header_t *obs_header);
+int write_data(void *data, int nbytes);
+void close_file();
 
 #endif

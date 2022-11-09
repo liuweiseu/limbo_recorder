@@ -32,16 +32,16 @@ static int init(hashpipe_thread_args_t * args){
     printf("\n\n-----------Start Setup of Net Thread--------------\n");
     // define default network params
     char bindhost[128];
-    int bindport = 4000;
+    int bindport = 5000;
     hashpipe_status_t st = args->st;
-    strcpy(bindhost, "0.0.0.0");
-
+    //strcpy(bindhost, "0.0.0.0");
+    strcpy(bindhost, "enp3s0");
     // Lock shared buffer to properly get and set values.
     hashpipe_status_lock_safe(&st);
 
     // Get info from status buffer if present
-    hgets(st.buf, "BINDHOST", 128, bindhost);
-    hgeti4(st.buf, "BINDPORT", &bindport);
+    //hgets(st.buf, "BINDHOST", 128, bindhost);
+    //hgeti4(st.buf, "BINDPORT", &bindport);
 
     // Store bind host/port info and other info in status buffer
     hputs(st.buf, "BINDHOST", bindhost);
@@ -51,7 +51,6 @@ static int init(hashpipe_thread_args_t * args){
 
     // Unlock shared buffer once complete.
     hashpipe_status_unlock_safe(&st);
-
     // Set up pktsocket
     struct hashpipe_pktsock *p_ps = (struct hashpipe_pktsock *)
     malloc(sizeof(struct hashpipe_pktsock));
@@ -160,11 +159,12 @@ static void *run(hashpipe_thread_args_t * args)
 
         for(int i = 0; i < SPECTRAS_PER_BLOCK; i++)
         {
+            //printf("receiving pkts\n");
              // Recv all of the UDP packets from PKTSOCK
             do {
                 p_frame = hashpipe_pktsock_recv_udp_frame_nonblock(p_ps, bindport);
             } while (!p_frame && run_threads());
-
+            //printf("received all pkts\n");
             // Time stamp the packets and pass it into the shared buffer
             rv = gettimeofday(&nowTime, NULL);
             if (rv == 0){
@@ -175,7 +175,7 @@ static void *run(hashpipe_thread_args_t * args)
                 db->block[block_idx].spectra->tv_sec = 0;
                 db->block[block_idx].spectra->tv_usec = 0;
             }
-
+            //printf("get time\n");
             pkt_data = (uint8_t *) PKT_UDP_DATA(p_frame);
             // the first 8 bytes are the pkt header
             // cnt(7 bytes) + snap_id(1 byte)
@@ -193,7 +193,7 @@ static void *run(hashpipe_thread_args_t * args)
             *(pkt_data+4) = *(pkt_data+2);
             *(pkt_data+2) = tmp;
             // the first 16 bytes are used for sec and usec
-            memcpy(db->block[block_idx].spectra+i*PKT_SIZE+16, pkt_data, PKT_SIZE);
+            memcpy((uint8_t *)(db->block[block_idx].spectra)+i*FRAME_SIZE+16, pkt_data, PKT_SIZE);
             // get the cnt value from the packet
             pktsock_cnt = *((uint64_t *)pkt_data);
             if(first_pkt == 0){
@@ -202,14 +202,14 @@ static void *run(hashpipe_thread_args_t * args)
                 first_pkt = 1;
             }
             pktsock_loss += pktsock_pre_cnt + 1 - pktsock_cnt;
-
+            //printf("pktsock_cnt=%ld\n",pktsock_cnt);
             pktsock_pre_cnt = (pktsock_cnt==pow(2,CNT_BITWIDTH)-1)?-1:pktsock_cnt;
             npackets++;
 
             // Release the hashpipe frame back to the kernel to gather data
             hashpipe_pktsock_release_frame(p_frame);
         }
-
+        //printf("block full\n");
         // Get stats from packet socket
 		hashpipe_pktsock_stats(p_ps, &pktsock_pkts, &pktsock_drops);
 
@@ -245,7 +245,7 @@ static void *run(hashpipe_thread_args_t * args)
 static hashpipe_thread_desc_t net_thread = {
     name: "net_thread",
     skey: "NETSTAT",
-    init: NULL,
+    init: init,
     run:  run,
     ibuf_desc: {NULL},
     obuf_desc: {input_databuf_create}
