@@ -34,10 +34,10 @@ static void create_filename(char *filename, unsigned int pkt_type){
     time_t timenow;
     struct tm *tm_p;
     time(&timenow);
-    tm_p = localtime(&timenow);
+    tm_p = gmtime(&timenow);
     // To-do: create file name based on "pkt_type"
-    sprintf(filename,"Spectra_%04d%02d%02d%02d%02d%02d.dat",  tm_p->tm_year +1900,  \
-                                            tm_p->tm_mon,   \
+    sprintf(filename,"Spectra_%04d%02d%02d%02d%02d%02d.dat",  tm_p->tm_year + 1900,  \
+                                            tm_p->tm_mon + 1,   \
                                             tm_p->tm_mday,  \
                                             tm_p->tm_hour,  \
                                             tm_p->tm_min,   \
