@@ -12,16 +12,19 @@ The code is used for recording data for LIMBO project.
     ./restart_recorder.sh
 ```
 When you run this script, a "data" directory will be created the project directory.  
+
 3. Enable recording
 ```
     ./enable_record.sh
 ```
-When you run this script, a data file will be created in the "data" directory.   
+When you run this script, a data file will be created in the "data" directory.  
+
 4. Disable recording
 ```
     ./disbale_record.sh
 ```
 This script will stop recording data. Once you run ```./enable_record.sh``` again, a new data file will be created.  
+
 5. Stop the data Recorder
 ```
     ./stop_recorder.sh
@@ -64,7 +67,7 @@ Each data frame contains three part:
     uint64_t cnt
 ```
 ***Notice***: Only 56 bits are valid in the cnt value.
-  
+
 3. spectra data
 ```
     uint16_t spectra[2048]
