@@ -20,7 +20,6 @@ $(LIB_TARGET): file ${LIB_SRCS}
 	@mv ${LIB_TARGET} ${LIB_DIR}
 file :
 	@echo ${LIB_SRCS}
-	@echo ${LIB_OBJS}
 
 tags:
 	ctags -R .
