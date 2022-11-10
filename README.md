@@ -63,7 +63,8 @@ Each data frame contains three part:
 ```
     uint64_t cnt
 ```
-***Notice***: Only 56 bits are valid in the cnt value.  
+***Notice***: Only 56 bits are valid in the cnt value.
+  
 3. spectra data
 ```
     uint16_t spectra[2048]
