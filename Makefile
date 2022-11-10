@@ -17,7 +17,7 @@ all: $(LIB_TARGET)
 
 $(LIB_TARGET): file ${LIB_SRCS} 
 	$(CC) ${LIB_SRCS} -o $@ ${LIB_INCLUDES} ${LIB_LINKS} ${LIB_CCFLAGS} 
-	mv ${LIB_TARGET} ${LIB_DIR}
+	@mv ${LIB_TARGET} ${LIB_DIR}
 file :
 	@echo ${LIB_SRCS}
 	@echo ${LIB_OBJS}
