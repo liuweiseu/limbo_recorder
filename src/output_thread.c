@@ -42,7 +42,7 @@ static void create_filename(char *filename, unsigned int pkt_type){
                                             tm_p->tm_hour,  \
                                             tm_p->tm_min,   \
                                             tm_p->tm_sec);
-    printf("%s\n", filename);    
+    fprintf(stdout,"New file created: %s\n", filename);    
 }
 
 /*
@@ -58,12 +58,22 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_settings_t *obs_settings_ptr = &obs_settings;
     get_obs_info_from_redis(obs_settings_ptr,REDIS_HOST, REDIS_PORT);
     obs_header->ACCLEN      = obs_settings_ptr->ACCLEN;
-    memcpy(obs_settings_ptr->ADCDELAY, obs_header->ADCDELAY, 8*sizeof(unsigned int));
+    memcpy(obs_header->ADCDELAY, obs_settings_ptr->ADCDELAY, 8*sizeof(unsigned int));
     obs_header->FFTSHITF    = obs_settings_ptr->FFTSHITF;
     obs_header->SAMPLEFREQ  = obs_settings_ptr->SAMPLEFREQ;
     obs_header->SCALING     = obs_settings_ptr->SCALING;
     obs_header->SPECCOEFF   = obs_settings_ptr->SPECCOEFF;
     obs_header->TIME        = obs_settings_ptr->TIME;
+    memcpy(obs_header->FPG, obs_settings_ptr->FPG, FPG_LEN);
+    /*
+    printf("fft_shitf: %d\n", obs_header->FFTSHITF);
+    printf("acclen: %d\n", obs_header->ACCLEN);
+    printf("samplefreq: %d\n", obs_header->SAMPLEFREQ);
+    printf("coeff: %d\n",obs_header->SPECCOEFF);
+    printf("time: %f\n", obs_header->TIME);
+    printf("scaling: %d\n", obs_header->SCALING);
+    printf("fpg file: %s\n", obs_header->FPG);
+    */
 }
 
 static int init(hashpipe_thread_args_t *args) {
@@ -91,7 +101,7 @@ static void *run(hashpipe_thread_args_t * args)
     memset(recordstatus_ptr->filename,0,128);
     recordstatus_ptr->file_created = 0;
     recordstatus_ptr->recording = 0;
-
+    
     /* Main loop */
     while (run_threads()) {
         hashpipe_status_lock_safe(&st);
@@ -135,6 +145,8 @@ static void *run(hashpipe_thread_args_t * args)
                 // if the data file is created, we need to write header.
                 obs_header_t obs_header;
                 // To-do: get header info from redis
+                get_snap_settings(&obs_header);
+                /*
                 obs_header.ACCLEN = 127;
                 memset(obs_header.ADCDELAY,0,8*sizeof(unsigned int));
                 obs_header.FFTSHITF = 65535;
@@ -142,6 +154,7 @@ static void *run(hashpipe_thread_args_t * args)
                 obs_header.SCALING = 0;
                 obs_header.SPECCOEFF = 7;
                 obs_header.TIME = 0.0;
+                */
                 write_header(&obs_header);
                 recordstatus_ptr->recording = 1;
             }

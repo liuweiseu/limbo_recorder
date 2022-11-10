@@ -1,8 +1,10 @@
 #ifndef _OBS_REDIS_H
 #define _OBS_REDIS_H
 
+#define FPG_LEN 128
 typedef struct obs_settings{
     double TIME;
+    char FPG[FPG_LEN];
     unsigned int SAMPLEFREQ;
     unsigned int ACCLEN;
     unsigned int FFTSHITF;

@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <string.h>
 #include <hiredis/hiredis.h>
 #include "hashpipe.h"
 
@@ -70,7 +71,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 
     const char * host_observatory = "localhost";
     int port_observatory = 6379;
-    const char * host_pw = "fast";
+    const char * host_pw = "limbo";
 
     char computehostname[32];
     char query_string[64];
@@ -104,7 +105,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         }
         exit(1);
     }
-	rv = redis_get(c_observatory, &reply,"AUTH fast");
+	//rv = redis_get(c_observatory, &reply,"AUTH limbo");
 #endif
 
 	gethostname(computehostname, sizeof(computehostname));
@@ -112,7 +113,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 	// Get observatory data
 	// RA and DEC gathered by name rather than a looped redis query so that all meta data is of a 
 	// single point in time
-	if(!rv) rv = redis_get(c_observatory, &reply,"hmget OBS_SETTING TimeStamp    \
+	if(!rv) rv = redis_get(c_observatory, &reply,"hmget OBS_SETTINGS   TimeStamp    \
                                                                        SampleFreq   \
                                                                        AccLen       \
                                                                        FFTShift     \
@@ -125,9 +126,10 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
                                                                        AdcDelay4    \
                                                                        AdcDelay5    \
                                                                        AdcDelay6    \
-                                                                       AdcDelay7");
+                                                                       AdcDelay7    \
+                                                                       fpg");
 	if(!rv) {
-		obs_settings->TIME      = atof(reply->element[0]->str)/1000.0;	// observatory gives us millisecs, we record as decimal seconds
+		obs_settings->TIME      = atof(reply->element[0]->str);	
 		obs_settings->SAMPLEFREQ= atoi(reply->element[1]->str);
         obs_settings->ACCLEN    = atoi(reply->element[2]->str);
         obs_settings->FFTSHITF  = atoi(reply->element[3]->str);
@@ -141,6 +143,8 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         obs_settings->ADCDELAY[5] = atoi(reply->element[11]->str);
         obs_settings->ADCDELAY[6] = atoi(reply->element[12]->str);
         obs_settings->ADCDELAY[7] = atoi(reply->element[13]->str);
+        memset(obs_settings->FPG,0,FPG_LEN);
+        memcpy(obs_settings->FPG,reply->element[14]->str,reply->element[14]->len);
 	}
    
     if(c) redisFree(c);       // TODO do I really want to free each time?

@@ -9,7 +9,8 @@ void create_file(char *filename){
 
 int write_header(obs_header_t *obs_header){
     fprintf(fp, "{\n");
-    fprintf(fp, " \"Time\": %10f,        \
+    fprintf(fp, " \"fpg\": \"%s\",         \
+                  \"Time\": %10f,        \
                   \"SampleFreq\": %4u,   \
                   \"AccLen\": %4u,       \
                   \"FFTShitf\": %5u,     \
@@ -23,7 +24,8 @@ int write_header(obs_header_t *obs_header){
                   \"AdcDelay5\": %4u,    \
                   \"AdcDelay6\": %4u,    \
                   \"AdcDelay7\": %4u     \
-                }", obs_header->TIME,       \
+                }", obs_header->FPG,        \
+                    obs_header->TIME,       \
                     obs_header->SAMPLEFREQ, \
                     obs_header->ACCLEN,     \
                     obs_header->FFTSHITF,   \
