@@ -65,15 +65,6 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_header->SPECCOEFF   = obs_settings_ptr->SPECCOEFF;
     obs_header->TIME        = obs_settings_ptr->TIME;
     memcpy(obs_header->FPG, obs_settings_ptr->FPG, FPG_LEN);
-    /*
-    printf("fft_shitf: %d\n", obs_header->FFTSHITF);
-    printf("acclen: %d\n", obs_header->ACCLEN);
-    printf("samplefreq: %d\n", obs_header->SAMPLEFREQ);
-    printf("coeff: %d\n",obs_header->SPECCOEFF);
-    printf("time: %f\n", obs_header->TIME);
-    printf("scaling: %d\n", obs_header->SCALING);
-    printf("fpg file: %s\n", obs_header->FPG);
-    */
 }
 
 static int init(hashpipe_thread_args_t *args) {
@@ -132,7 +123,7 @@ static void *run(hashpipe_thread_args_t * args)
         {
             if(recordstatus_ptr->file_created == 0)
             {
-                 // if we are going to record data, but the file hasn't been created,
+                // if we are going to record data, but the file hasn't been created,
                 // let's create the file.
                 memset(recordstatus_ptr->filename,0,128);
                 create_filename(recordstatus_ptr->filename,0);
@@ -144,17 +135,7 @@ static void *run(hashpipe_thread_args_t * args)
             {
                 // if the data file is created, we need to write header.
                 obs_header_t obs_header;
-                // To-do: get header info from redis
                 get_snap_settings(&obs_header);
-                /*
-                obs_header.ACCLEN = 127;
-                memset(obs_header.ADCDELAY,0,8*sizeof(unsigned int));
-                obs_header.FFTSHITF = 65535;
-                obs_header.SAMPLEFREQ = 500;
-                obs_header.SCALING = 0;
-                obs_header.SPECCOEFF = 7;
-                obs_header.TIME = 0.0;
-                */
                 write_header(&obs_header);
                 recordstatus_ptr->recording = 1;
             }
@@ -171,7 +152,6 @@ static void *run(hashpipe_thread_args_t * args)
                 recordstatus_ptr->recording = 0;
             }
         }
-
         input_databuf_set_free(db,block_idx);
         block_idx = (block_idx + 1) % db->header.n_block;
     }
