@@ -14,7 +14,7 @@ else
     cd ../data
 fi
 
-cd .. 1> ${hostname}.out.${log_timestamp} \
+hashpipe -p limbo.so -I 0 net_thread output_thread 1> ${hostname}.out.${log_timestamp} \
                                                    2> ${hostname}.err.${log_timestamp} &
 
 echo "Instance 0 started."
