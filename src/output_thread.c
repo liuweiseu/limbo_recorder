@@ -80,7 +80,7 @@ static void *run(hashpipe_thread_args_t * args)
 {
     // Local aliases to shorten access to args fields
     // Our input buffer happens to be a ouput_databuf
-    input_databuf_t *db = (input_databuf_t *)args->ibuf;
+    databuf_t *db = (databuf_t *)args->ibuf;
     hashpipe_status_t st = args->st;
     const char * status_key = args->thread_desc->skey;
     int c,rv;
@@ -100,7 +100,7 @@ static void *run(hashpipe_thread_args_t * args)
         hputs(st.buf, status_key, "waiting");
         hashpipe_status_unlock_safe(&st);
        // get new data
-       while ((rv=input_databuf_wait_filled(db, block_idx))
+       while ((rv=databuf_wait_filled(db, block_idx))
                 != HASHPIPE_OK) {
             if (rv==HASHPIPE_TIMEOUT) {
                 hashpipe_status_lock_safe(&st);
@@ -152,7 +152,7 @@ static void *run(hashpipe_thread_args_t * args)
                 recordstatus_ptr->recording = 0;
             }
         }
-        input_databuf_set_free(db,block_idx);
+        databuf_set_free(db,block_idx);
         block_idx = (block_idx + 1) % db->header.n_block;
     }
     return NULL;
@@ -163,7 +163,7 @@ static hashpipe_thread_desc_t output_thread = {
     skey: "OUTSTAT",
     init: init, 
     run:  run,
-    ibuf_desc: {input_databuf_create},
+    ibuf_desc: {databuf_create},
     obuf_desc: {NULL}
 };
 

@@ -84,15 +84,15 @@ static int init(hashpipe_thread_args_t * args){
 	args->user_data = p_ps;
 
     // Initialize the the starting values of the input buffer.
-    input_databuf_t *db  = (input_databuf_t *)args->obuf;
-    printf("-----------Finished Setup of Input Thread------------\n\n");
+    databuf_t *db  = (databuf_t *)args->obuf;
+    printf("-----------Finished Setup of Net Thread------------\n\n");
 	// Success!
     return 0;
 }
 
 static void *run(hashpipe_thread_args_t * args)
 {
-    input_databuf_t *db  = (input_databuf_t *)args->obuf;
+    databuf_t *db  = (databuf_t *)args->obuf;
     hashpipe_status_t st = args->st;
     const char * status_key = args->thread_desc->skey;
 
@@ -140,7 +140,7 @@ static void *run(hashpipe_thread_args_t * args)
         /* Wait for new block to be free, then clear it
          * if necessary and fill its header with new values.
          */
-        while ((rv=input_databuf_wait_free(db, block_idx)) != HASHPIPE_OK) {
+        while ((rv=databuf_wait_free(db, block_idx)) != HASHPIPE_OK) {
             if (rv==HASHPIPE_TIMEOUT) {
                 hashpipe_status_lock_safe(&st);
                 hputs(st.buf, status_key, "blocked");
@@ -225,7 +225,7 @@ static void *run(hashpipe_thread_args_t * args)
 		hashpipe_status_unlock_safe(&st);
 
         // Mark block as full
-        if(input_databuf_set_filled(db, block_idx) != HASHPIPE_OK){
+        if(databuf_set_filled(db, block_idx) != HASHPIPE_OK){
             hashpipe_error(__FUNCTION__, "error waiting for databuf filled call");
             pthread_exit(NULL);
         }
@@ -248,7 +248,7 @@ static hashpipe_thread_desc_t net_thread = {
     init: init,
     run:  run,
     ibuf_desc: {NULL},
-    obuf_desc: {input_databuf_create}
+    obuf_desc: {databuf_create}
 };
 
 static __attribute__((constructor)) void ctor()
