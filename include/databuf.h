@@ -9,17 +9,16 @@
 #define REDIS_PORT              6379
 
 #define CACHE_ALIGNMENT         8
-#define N_BLOCKS                8 
-#define N_OUTPUT_BLOCKS         8
+#define N_BLOCKS                64 
 
 #define SPECTRA_SIZE            2048
-#define SPECTRAS_PER_BLOCK      4*1024
+#define SPECTRAS_PER_BLOCK      (4*1024) 
 #define SPECTRA_PKT_SIZE        (SPECTRA_SIZE * sizeof(unsigned short) + 8)
 #define SPECTRA_FRAME_SIZE      (SPECTRA_PKT_SIZE + 8*2)
 #define SPECTRA_BYTES_PER_BLOCK (SPECTRA_FRAME_SIZE * SPECTRAS_PER_BLOCK)  
 
 #define VOL_SIZE                8192
-#define VOL_PER_BLOCK           1024
+#define VOL_PER_BLOCK           (2*1024)
 #define VOL_PKT_SIZE            (VOL_SIZE * sizeof(char) + 8)
 #define VOL_FRAME_SIZE          (VOL_PKT_SIZE + 8*2)
 #define VOL_BYTES_PER_BLOCK     (VOL_FRAME_SIZE * VOL_PER_BLOCK)
@@ -53,8 +52,8 @@ typedef struct vol_pkt{
 } vol_pkt_t;
 
 typedef struct vol_frame{
-    uint64_t sec;
-    uint64_t usec;
+    uint64_t tv_sec;
+    uint64_t tv_usec;
 } vol_frame_t;
 typedef struct block {
    block_header_t header;

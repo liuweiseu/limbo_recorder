@@ -101,6 +101,7 @@ static void *run(hashpipe_thread_args_t * args)
     int c,rv;
     int block_idx = 0;
     uint32_t record_flag = 0;
+    uint32_t pkt_type = 0;
     char filename[128]={0};
     record_status_t recordstatus;
     record_status_t *recordstatus_ptr = &recordstatus;
@@ -131,6 +132,7 @@ static void *run(hashpipe_thread_args_t * args)
  
         hashpipe_status_lock_safe(&st);
         hputs(st.buf, status_key, "processing");
+        hgetu4(st.buf, "PKT_TYPE",&pkt_type);
         hashpipe_status_unlock_safe(&st);
 
         hgetu4(st.buf,"RECORD",&record_flag);
@@ -141,7 +143,7 @@ static void *run(hashpipe_thread_args_t * args)
                 // if we are going to record data, but the file hasn't been created,
                 // let's create the file.
                 memset(recordstatus_ptr->filename,0,128);
-                create_filename(recordstatus_ptr->filename,0);
+                create_filename(recordstatus_ptr->filename,pkt_type);
                 create_file(recordstatus_ptr->filename);
                 recordstatus_ptr->file_created = 1;
                 recordstatus_ptr->recording = 0;
@@ -156,7 +158,10 @@ static void *run(hashpipe_thread_args_t * args)
             }
             if(recordstatus_ptr->recording == 1)
             {
-                write_data(db->block[block_idx].blk_data,SPECTRAS_PER_BLOCK*SPECTRA_FRAME_SIZE);
+                if(pkt_type == 0)// spectra data
+                    write_data(db->block[block_idx].blk_data,SPECTRAS_PER_BLOCK*SPECTRA_FRAME_SIZE);
+                else if(pkt_type == 1)// voltage data
+                    write_data(db->block[block_idx].blk_data,VOL_PER_BLOCK*VOL_FRAME_SIZE);
             }  
         }else
         {   

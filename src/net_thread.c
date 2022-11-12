@@ -48,6 +48,7 @@ static int init(hashpipe_thread_args_t * args){
 	hputi4(st.buf, "BINDPORT", bindport);
     hputi8(st.buf, "NPACKETS", 0);
     hputu4(st.buf, "RECORD", 0);
+    hputi8(st.buf, "PKTLOSS",0);
 
     // Unlock shared buffer once complete.
     hashpipe_status_unlock_safe(&st);
@@ -103,8 +104,7 @@ static void *run(hashpipe_thread_args_t * args)
  
     uint8_t* pkt_data;
     struct timeval nowTime;             // Current NTP UTC time
-    uint32_t id;                        //snap id
-    uint32_t pkt_type = 0;              // pkt type, 0: spectra; 1: voltage(500MSps); 2: voltage(1000MSps)
+    uint32_t id = 0;                        //snap id
     uint32_t pktsock_pkts = 0;          // Stats counter for socket packet
     uint32_t pktsock_drops = 0;         // Stats counter for dropped socket packet
     uint32_t pktsock_loss = 0;          // Stats counter for packets loss
@@ -113,12 +113,16 @@ static void *run(hashpipe_thread_args_t * args)
     uint8_t first_pkt = 0;
     uint32_t npackets = 0;              // number of received packets
     int32_t bindport = 0;
+    uint32_t pkt_type = 0;              // pkt type, 0: spectra; 1: voltage(500MSps); 2: voltage(1000MSps)
     spectra_frame_t *spectra_frame;
     vol_frame_t *vol_frame;
+    uint32_t frame_no = 0;
+    uint8_t ok = 0;
 
     hashpipe_status_lock_safe(&st);
 	hgeti4(st.buf, "BINDPORT", &bindport);
 	hputs(st.buf, status_key, "running");
+    hputu4(st.buf, "PKT_TYPE", pkt_type);
 	hashpipe_status_unlock_safe(&st);
 
     // Get pktsock from args
@@ -158,8 +162,17 @@ static void *run(hashpipe_thread_args_t * args)
         hashpipe_status_lock_safe(&st);
         hputs(st.buf, status_key, "receiving");
         hashpipe_status_unlock_safe(&st);
-        spectra_frame = (spectra_frame_t *)(db->block[block_idx].blk_data);
-        for(int i = 0; i < SPECTRAS_PER_BLOCK; i++)
+        if(pkt_type == 0)
+        {
+            spectra_frame = (spectra_frame_t *)(db->block[block_idx].blk_data);
+            frame_no = SPECTRAS_PER_BLOCK;
+        }
+        else if(pkt_type == 1)
+        {
+            vol_frame = (vol_frame_t *)(db->block[block_idx].blk_data);
+            frame_no = VOL_PER_BLOCK;
+        }
+        for(uint32_t i = 0; i < frame_no; i++)
         {
             //printf("receiving pkts\n");
              // Recv all of the UDP packets from PKTSOCK
@@ -170,12 +183,26 @@ static void *run(hashpipe_thread_args_t * args)
             // Time stamp the packets and pass it into the shared buffer
             rv = gettimeofday(&nowTime, NULL);
             if (rv == 0){
-                (spectra_frame+i)->tv_sec = nowTime.tv_sec;
-                (spectra_frame+i)->tv_usec = nowTime.tv_usec;
+                if(pkt_type == 0)
+                {
+                    (spectra_frame+i)->tv_sec = nowTime.tv_sec;
+                    (spectra_frame+i)->tv_usec = nowTime.tv_usec;
+                }else if(pkt_type == 1)
+                {
+                    (vol_frame+i)->tv_sec = nowTime.tv_sec;
+                    (vol_frame+i)->tv_usec = nowTime.tv_usec; 
+                }
             } else {
                 fprintf(stderr, "gettimeofday() failed, errno = %d\n", errno);
-                (spectra_frame+i)->tv_sec = 0;
-                (spectra_frame+i)->tv_usec = 0;
+                if(pkt_type == 0)
+                {
+                    (spectra_frame+i)->tv_sec = 0;
+                    (spectra_frame+i)->tv_usec = 0;
+                }else if(pkt_type == 1)
+                {
+                    (vol_frame+i)->tv_sec = 0;
+                    (vol_frame+i)->tv_usec = 0; 
+                }
             }
             //printf("get time\n");
             pkt_data = (uint8_t *) PKT_UDP_DATA(p_frame);
@@ -195,7 +222,12 @@ static void *run(hashpipe_thread_args_t * args)
             *(pkt_data+4) = *(pkt_data+2);
             *(pkt_data+2) = tmp;
             // the first 16 bytes are used for sec and usec
-            memcpy((uint8_t *)(db->block[block_idx].blk_data)+i*SPECTRA_FRAME_SIZE+16, pkt_data, SPECTRA_PKT_SIZE);
+            // we may have two kinds of pkt types
+            if(pkt_type == 0)
+                memcpy((uint8_t *)(spectra_frame + i) + 16, pkt_data, SPECTRA_PKT_SIZE);
+            else if(pkt_type == 1)
+                memcpy((uint8_t *)(vol_frame + i) + 16,pkt_data, VOL_PKT_SIZE);
+
             // get the cnt value from the packet
             pktsock_cnt = *((uint64_t *)pkt_data);
             if(first_pkt == 0){
@@ -203,7 +235,12 @@ static void *run(hashpipe_thread_args_t * args)
                 pktsock_pre_cnt = pktsock_cnt - 1;
                 first_pkt = 1;
             }
-            pktsock_loss += pktsock_pre_cnt + 1 - pktsock_cnt;
+            pktsock_loss += pktsock_cnt - pktsock_pre_cnt - 1;
+            if(pktsock_loss > 0 && ok == 0)
+            {
+                ok = 1;
+                printf("cur_cnt: %ld; pre_cnt: %ld\n", pktsock_cnt, pktsock_pre_cnt);
+            }
             //printf("pktsock_cnt=%ld\n",pktsock_cnt);
             pktsock_pre_cnt = (pktsock_cnt==pow(2,CNT_BITWIDTH)-1)?-1:pktsock_cnt;
             npackets++;
