@@ -9,15 +9,23 @@
 #define REDIS_PORT              6379
 
 #define CACHE_ALIGNMENT         8
-#define N_BLOCKS          8 
+#define N_BLOCKS                8 
 #define N_OUTPUT_BLOCKS         8
 
 #define SPECTRA_SIZE            2048
 #define SPECTRAS_PER_BLOCK      4*1024
-#define PKT_SIZE                (SPECTRA_SIZE * sizeof(unsigned short) + 8)
-#define FRAME_SIZE              (PKT_SIZE + 8*2)   
-#define CNT_BITWIDTH            56
+#define SPECTRA_PKT_SIZE        (SPECTRA_SIZE * sizeof(unsigned short) + 8)
+#define SPECTRA_FRAME_SIZE      (SPECTRA_PKT_SIZE + 8*2)
+#define SPECTRA_BYTES_PER_BLOCK (SPECTRA_FRAME_SIZE * SPECTRAS_PER_BLOCK)  
 
+#define VOL_SIZE                8192
+#define VOL_PER_BLOCK           1024
+#define VOL_PKT_SIZE            (VOL_SIZE * sizeof(char) + 8)
+#define VOL_FRAME_SIZE          (VOL_PKT_SIZE + 8*2)
+#define VOL_BYTES_PER_BLOCK     (VOL_FRAME_SIZE * VOL_PER_BLOCK)
+
+#define MAX_BYTES_PER_BLOCK     ((VOL_BYTES_PER_BLOCK > SPECTRA_BYTES_PER_BLOCK)?VOL_BYTES_PER_BLOCK:SPECTRA_BYTES_PER_BLOCK)
+#define CNT_BITWIDTH            56
 /* INPUT BUFFER STRUCTURES
   */
 typedef struct block_header {
@@ -28,21 +36,30 @@ typedef uint8_t header_cache_alignment[
    CACHE_ALIGNMENT - (sizeof(block_header_t)%CACHE_ALIGNMENT)
 ];
 
-typedef struct pkt {
+typedef struct spectra_pkt {
     uint64_t cnt;  //id and cnt are combined to a 64-bit data, id-8bit + cnt-56bit
-    uint16_t spectra[SPECTRA_SIZE];
-} pkt_t;
+    uint16_t pkt_data[SPECTRA_SIZE];
+} spectra_pkt_t;
 
-typedef struct frame {
+typedef struct spectra_frame {
     uint64_t tv_sec;
     uint64_t tv_usec;
-    pkt_t pkt_data;
-}frame_t;
+    spectra_pkt_t packet;
+} spectra_frame_t;
 
+typedef struct vol_pkt{
+    uint64_t cnt;
+    uint8_t pkt_data[VOL_SIZE];
+} vol_pkt_t;
+
+typedef struct vol_frame{
+    uint64_t sec;
+    uint64_t usec;
+} vol_frame_t;
 typedef struct block {
    block_header_t header;
    header_cache_alignment padding; // Maintain cache alignment
-   frame_t spectra[SPECTRAS_PER_BLOCK];
+   uint8_t blk_data[MAX_BYTES_PER_BLOCK];
 } block_t;
 
 typedef struct databuf {

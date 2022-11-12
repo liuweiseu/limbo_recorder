@@ -20,9 +20,9 @@
 #include "hashpipe.h"
 #include "databuf.h"
 
-#define PKTSOCK_BYTES_PER_FRAME (8192)
+#define PKTSOCK_BYTES_PER_FRAME (16384)
 #define PKTSOCK_FRAMES_PER_BLOCK (512)
-#define PKTSOCK_NBLOCKS (512)
+#define PKTSOCK_NBLOCKS (128)
 #define PKTSOCK_NFRAMES (PKTSOCK_FRAMES_PER_BLOCK * PKTSOCK_NBLOCKS)
 
 // Initialization function for Hashpipe.
@@ -113,6 +113,8 @@ static void *run(hashpipe_thread_args_t * args)
     uint8_t first_pkt = 0;
     uint32_t npackets = 0;              // number of received packets
     int32_t bindport = 0;
+    spectra_frame_t *spectra_frame;
+    vol_frame_t *vol_frame;
 
     hashpipe_status_lock_safe(&st);
 	hgeti4(st.buf, "BINDPORT", &bindport);
@@ -156,7 +158,7 @@ static void *run(hashpipe_thread_args_t * args)
         hashpipe_status_lock_safe(&st);
         hputs(st.buf, status_key, "receiving");
         hashpipe_status_unlock_safe(&st);
-
+        spectra_frame = (spectra_frame_t *)(db->block[block_idx].blk_data);
         for(int i = 0; i < SPECTRAS_PER_BLOCK; i++)
         {
             //printf("receiving pkts\n");
@@ -168,12 +170,12 @@ static void *run(hashpipe_thread_args_t * args)
             // Time stamp the packets and pass it into the shared buffer
             rv = gettimeofday(&nowTime, NULL);
             if (rv == 0){
-                db->block[block_idx].spectra->tv_sec = nowTime.tv_sec;
-                db->block[block_idx].spectra->tv_usec = nowTime.tv_usec;
+                (spectra_frame+i)->tv_sec = nowTime.tv_sec;
+                (spectra_frame+i)->tv_usec = nowTime.tv_usec;
             } else {
                 fprintf(stderr, "gettimeofday() failed, errno = %d\n", errno);
-                db->block[block_idx].spectra->tv_sec = 0;
-                db->block[block_idx].spectra->tv_usec = 0;
+                (spectra_frame+i)->tv_sec = 0;
+                (spectra_frame+i)->tv_usec = 0;
             }
             //printf("get time\n");
             pkt_data = (uint8_t *) PKT_UDP_DATA(p_frame);
@@ -193,7 +195,7 @@ static void *run(hashpipe_thread_args_t * args)
             *(pkt_data+4) = *(pkt_data+2);
             *(pkt_data+2) = tmp;
             // the first 16 bytes are used for sec and usec
-            memcpy((uint8_t *)(db->block[block_idx].spectra)+i*FRAME_SIZE+16, pkt_data, PKT_SIZE);
+            memcpy((uint8_t *)(db->block[block_idx].blk_data)+i*SPECTRA_FRAME_SIZE+16, pkt_data, SPECTRA_PKT_SIZE);
             // get the cnt value from the packet
             pktsock_cnt = *((uint64_t *)pkt_data);
             if(first_pkt == 0){

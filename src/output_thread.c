@@ -35,12 +35,27 @@ static void create_filename(char *filename, unsigned int pkt_type){
     struct tm *tm_p;
     time(&timenow);
     tm_p = gmtime(&timenow);
-    // To-do: create file name based on "pkt_type"
-    sprintf(filename,"Spectra_%04d%02d%02d%02d%02d%02d.dat",  tm_p->tm_year + 1900,  \
-                                            tm_p->tm_mon + 1,   \
-                                            tm_p->tm_mday,  \
-                                            tm_p->tm_hour,  \
-                                            tm_p->tm_min,   \
+    int l = 0;
+    if(pkt_type == 0)
+    {
+        strcpy(filename,"Spectra");
+        l = strlen("Spectra");
+    }
+    else if(pkt_type == 1)
+    {
+        strcpy(filename,"VoltageV0");
+        l = strlen("VoltageV0");
+    }
+    else if(pkt_type == 2)
+    {
+        strcpy(filename,"VoltageV1");
+        l = strlen("VoltageV1");
+    }
+    sprintf(filename + l,"_%04d%02d%02d%02d%02d%02d.dat", tm_p->tm_year + 1900,  \
+                                            tm_p->tm_mon + 1,      \
+                                            tm_p->tm_mday,         \
+                                            tm_p->tm_hour,         \
+                                            tm_p->tm_min,          \
                                             tm_p->tm_sec);
     fprintf(stdout,"New file created: %s\n", filename);    
 }
@@ -141,7 +156,7 @@ static void *run(hashpipe_thread_args_t * args)
             }
             if(recordstatus_ptr->recording == 1)
             {
-                write_data(db->block[block_idx].spectra,SPECTRAS_PER_BLOCK*FRAME_SIZE);
+                write_data(db->block[block_idx].blk_data,SPECTRAS_PER_BLOCK*SPECTRA_FRAME_SIZE);
             }  
         }else
         {   

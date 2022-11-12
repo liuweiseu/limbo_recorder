@@ -95,7 +95,8 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 
 #if 1
 	// Observatory DB
-    c_observatory = redisConnectWithTimeout((char *)host_observatory, port_observatory, timeout);
+    // c_observatory = redisConnectWithTimeout((char *)host_observatory, port_observatory, timeout);
+    c_observatory = redisConnectWithTimeout((char *)hostname, port, timeout);
     if (c == NULL || c->err) {
         if (c) {
             hashpipe_error(__FUNCTION__, c->errstr);
