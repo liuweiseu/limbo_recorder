@@ -115,7 +115,8 @@ static void *run(hashpipe_thread_args_t * args)
     uint32_t npackets = 0;              // number of received packets
     int32_t bindport = 0;
     spectra_frame_t *spectra_frame;
-    vol_frame_t *vol_frame;
+    volv1_frame_t *volv1_frame;
+    volv2_frame_t *volv2_frame;
     uint32_t frame_no = 0;
     uint8_t ok = 0;
     uint32_t pkt_type = 0;
@@ -170,8 +171,13 @@ static void *run(hashpipe_thread_args_t * args)
         }
         else if(pkt_type == 1)
         {
-            vol_frame = (vol_frame_t *)(db->block[block_idx].blk_data);
-            frame_no = VOL_PER_BLOCK;
+            volv1_frame = (volv1_frame_t *)(db->block[block_idx].blk_data);
+            frame_no = VOLV1_PER_BLOCK;
+        }
+        else if(pkt_type == 2)
+        {
+            volv2_frame = (volv2_frame_t *)(db->block[block_idx].blk_data);
+            frame_no = VOLV2_PER_BLOCK;
         }
         for(uint32_t i = 0; i < frame_no; i++)
         {
@@ -188,10 +194,16 @@ static void *run(hashpipe_thread_args_t * args)
                 {
                     (spectra_frame+i)->tv_sec = nowTime.tv_sec;
                     (spectra_frame+i)->tv_usec = nowTime.tv_usec;
-                }else if(pkt_type == 1)
+                }
+                else if(pkt_type == 1)
                 {
-                    (vol_frame+i)->tv_sec = nowTime.tv_sec;
-                    (vol_frame+i)->tv_usec = nowTime.tv_usec; 
+                    (volv1_frame+i)->tv_sec = nowTime.tv_sec;
+                    (volv1_frame+i)->tv_usec = nowTime.tv_usec; 
+                }
+                else if(pkt_type == 2)
+                {
+                    (volv2_frame+i)->tv_sec = nowTime.tv_sec;
+                    (volv2_frame+i)->tv_usec = nowTime.tv_usec; 
                 }
             } else {
                 fprintf(stderr, "gettimeofday() failed, errno = %d\n", errno);
@@ -199,10 +211,16 @@ static void *run(hashpipe_thread_args_t * args)
                 {
                     (spectra_frame+i)->tv_sec = 0;
                     (spectra_frame+i)->tv_usec = 0;
-                }else if(pkt_type == 1)
+                }
+                else if(pkt_type == 1)
                 {
-                    (vol_frame+i)->tv_sec = 0;
-                    (vol_frame+i)->tv_usec = 0; 
+                    (volv1_frame+i)->tv_sec = 0;
+                    (volv1_frame+i)->tv_usec = 0; 
+                }
+                else if(pkt_type == 2)
+                {
+                    (volv2_frame+i)->tv_sec = 0;
+                    (volv2_frame+i)->tv_usec = 0;
                 }
             }
             //printf("get time\n");
@@ -227,8 +245,9 @@ static void *run(hashpipe_thread_args_t * args)
             if(pkt_type == 0)
                 memcpy((uint8_t *)(spectra_frame + i) + 16, pkt_data, SPECTRA_PKT_SIZE);
             else if(pkt_type == 1)
-                memcpy((uint8_t *)(vol_frame + i) + 16,pkt_data, VOL_PKT_SIZE);
-
+                memcpy((uint8_t *)(volv1_frame + i) + 16,pkt_data, VOLV1_PKT_SIZE);
+            else if(pkt_type == 2)
+                memcpy((uint8_t *)(volv2_frame + i) + 16,pkt_data, VOLV2_PKT_SIZE);
             // get the cnt value from the packet
             pktsock_cnt = *((uint64_t *)pkt_data);
             if(first_pkt == 0){

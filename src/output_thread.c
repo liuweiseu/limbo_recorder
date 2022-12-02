@@ -43,13 +43,13 @@ static void create_filename(char *filename, unsigned int pkt_type){
     }
     else if(pkt_type == 1)
     {
-        strcpy(filename,"VoltageV0");
-        l = strlen("VoltageV0");
+        strcpy(filename,"VoltageV1");
+        l = strlen("VoltageV1");
     }
     else if(pkt_type == 2)
     {
-        strcpy(filename,"VoltageV1");
-        l = strlen("VoltageV1");
+        strcpy(filename,"VoltageV2");
+        l = strlen("VoltageV2");
     }
     sprintf(filename + l,"_%04d%02d%02d%02d%02d%02d.dat", tm_p->tm_year + 1900,  \
                                             tm_p->tm_mon + 1,      \
@@ -160,8 +160,10 @@ static void *run(hashpipe_thread_args_t * args)
             {
                 if(pkt_type == 0)// spectra data
                     write_data(db->block[block_idx].blk_data,SPECTRAS_PER_BLOCK*SPECTRA_FRAME_SIZE);
-                else if(pkt_type == 1)// voltage data
-                    write_data(db->block[block_idx].blk_data,VOL_PER_BLOCK*VOL_FRAME_SIZE);
+                else if(pkt_type == 1)// voltage data Ver1.0--4 adc inputs
+                    write_data(db->block[block_idx].blk_data,VOLV1_PER_BLOCK*VOLV1_FRAME_SIZE);
+                else if(pkt_type == 2)// voltage data Ver2.0--2 adc inputs
+                    write_data(db->block[block_idx].blk_data,VOLV1_PER_BLOCK*VOLV2_FRAME_SIZE);
             }  
         }else
         {   

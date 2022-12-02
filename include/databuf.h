@@ -17,12 +17,19 @@
 #define SPECTRA_FRAME_SIZE      (SPECTRA_PKT_SIZE + 8*2)
 #define SPECTRA_BYTES_PER_BLOCK (SPECTRA_FRAME_SIZE * SPECTRAS_PER_BLOCK)  
 
-#define VOL_SIZE                8192
-#define VOL_PER_BLOCK           (2*1024)
-#define VOL_PKT_SIZE            (VOL_SIZE * sizeof(char) + 8)
-#define VOL_FRAME_SIZE          (VOL_PKT_SIZE + 8*2)
-#define VOL_BYTES_PER_BLOCK     (VOL_FRAME_SIZE * VOL_PER_BLOCK)
+#define VOLV1_SIZE              8192
+#define VOLV1_PER_BLOCK         (2*1024)
+#define VOLV1_PKT_SIZE          (VOLV1_SIZE * sizeof(char) + 8)
+#define VOLV1_FRAME_SIZE        (VOLV1_PKT_SIZE + 8*2)
+#define VOLV1_BYTES_PER_BLOCK   (VOLV1_FRAME_SIZE * VOLV1_PER_BLOCK)
 
+#define VOLV2_SIZE              4096
+#define VOLV2_PER_BLOCK         (4*1024)
+#define VOLV2_PKT_SIZE          (VOLV2_SIZE * sizeof(char) + 8)
+#define VOLV2_FRAME_SIZE        (VOLV2_PKT_SIZE + 8*2)
+#define VOLV2_BYTES_PER_BLOCK   (VOLV2_FRAME_SIZE * VOLV2_PER_BLOCK)
+
+#define VOL_BYTES_PER_BLOCK     ((VOLV1_BYTES_PER_BLOCK > VOLV2_BYTES_PER_BLOCK)?VOLV1_BYTES_PER_BLOCK:VOLV2_BYTES_PER_BLOCK)
 #define MAX_BYTES_PER_BLOCK     ((VOL_BYTES_PER_BLOCK > SPECTRA_BYTES_PER_BLOCK)?VOL_BYTES_PER_BLOCK:SPECTRA_BYTES_PER_BLOCK)
 #define CNT_BITWIDTH            56
 /* INPUT BUFFER STRUCTURES
@@ -46,17 +53,27 @@ typedef struct spectra_frame {
     spectra_pkt_t packet;
 } spectra_frame_t;
 
-typedef struct vol_pkt{
+typedef struct volv1_pkt{
     uint64_t cnt;
-    uint8_t pkt_data[VOL_SIZE];
-} vol_pkt_t;
+    uint8_t pkt_data[VOLV1_SIZE];
+} volv1_pkt_t;
 
-typedef struct vol_frame{
+typedef struct volv1_frame{
     uint64_t tv_sec;
     uint64_t tv_usec;
-    vol_pkt_t packet;
-} vol_frame_t;
+    volv1_pkt_t packet;
+} volv1_frame_t;
 
+typedef struct volv2_pkt{
+    uint64_t cnt;
+    uint8_t pkt_data[VOLV2_SIZE];
+} volv2_pkt_t;
+
+typedef struct volv2_frame{
+    uint64_t tv_sec;
+    uint64_t tv_usec;
+    volv2_pkt_t packet;
+} volv2_frame_t;
 typedef struct block {
    block_header_t header;
    header_cache_alignment padding; // Maintain cache alignment
