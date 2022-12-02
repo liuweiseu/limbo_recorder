@@ -54,7 +54,9 @@ typedef struct vol_pkt{
 typedef struct vol_frame{
     uint64_t tv_sec;
     uint64_t tv_usec;
+    vol_pkt_t packet;
 } vol_frame_t;
+
 typedef struct block {
    block_header_t header;
    header_cache_alignment padding; // Maintain cache alignment

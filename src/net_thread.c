@@ -33,6 +33,7 @@ static int init(hashpipe_thread_args_t * args){
     // define default network params
     char bindhost[128];
     int bindport = 5000;
+    uint32_t pkt_type = 1;              // pkt type, 0: spectra; 1: voltage(500MSps); 2: voltage(1000MSps)
     hashpipe_status_t st = args->st;
     //strcpy(bindhost, "0.0.0.0");
     strcpy(bindhost, "enp3s0");
@@ -49,7 +50,7 @@ static int init(hashpipe_thread_args_t * args){
     hputi8(st.buf, "NPACKETS", 0);
     hputu4(st.buf, "RECORD", 0);
     hputi8(st.buf, "PKTLOSS",0);
-
+    hputu4(st.buf, "PKT_TYPE", pkt_type);
     // Unlock shared buffer once complete.
     hashpipe_status_unlock_safe(&st);
     // Set up pktsocket
@@ -113,16 +114,15 @@ static void *run(hashpipe_thread_args_t * args)
     uint8_t first_pkt = 0;
     uint32_t npackets = 0;              // number of received packets
     int32_t bindport = 0;
-    uint32_t pkt_type = 0;              // pkt type, 0: spectra; 1: voltage(500MSps); 2: voltage(1000MSps)
     spectra_frame_t *spectra_frame;
     vol_frame_t *vol_frame;
     uint32_t frame_no = 0;
     uint8_t ok = 0;
+    uint32_t pkt_type = 0;
 
     hashpipe_status_lock_safe(&st);
 	hgeti4(st.buf, "BINDPORT", &bindport);
 	hputs(st.buf, status_key, "running");
-    hputu4(st.buf, "PKT_TYPE", pkt_type);
 	hashpipe_status_unlock_safe(&st);
 
     // Get pktsock from args
@@ -140,6 +140,7 @@ static void *run(hashpipe_thread_args_t * args)
         // Update the info of the buffer
         hashpipe_status_lock_safe(&st);
         hputs(st.buf, status_key, "waiting");
+        hgetu4(st.buf, "PKT_TYPE", &pkt_type);
         hashpipe_status_unlock_safe(&st);
 
         // Wait for data
