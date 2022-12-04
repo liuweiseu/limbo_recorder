@@ -102,6 +102,7 @@ static void *run(hashpipe_thread_args_t * args)
     int block_idx = 0;
     uint32_t record_flag = 0;
     uint32_t pkt_type = 0;
+    uint32_t file_blocks = 0;
     char filename[128]={0};
     record_status_t recordstatus;
     record_status_t *recordstatus_ptr = &recordstatus;
@@ -161,9 +162,22 @@ static void *run(hashpipe_thread_args_t * args)
                 if(pkt_type == 0)// spectra data
                     write_data(db->block[block_idx].blk_data,SPECTRAS_PER_BLOCK*SPECTRA_FRAME_SIZE);
                 else if(pkt_type == 1)// voltage data Ver1.0--4 adc inputs
+                {
                     write_data(db->block[block_idx].blk_data,VOLV1_PER_BLOCK*VOLV1_FRAME_SIZE);
+                    file_blocks++;
+                }
                 else if(pkt_type == 2)// voltage data Ver2.0--2 adc inputs
-                    write_data(db->block[block_idx].blk_data,VOLV1_PER_BLOCK*VOLV2_FRAME_SIZE);
+                {
+                    write_data(db->block[block_idx].blk_data,VOLV2_PER_BLOCK*VOLV2_FRAME_SIZE);
+                    file_blocks++;
+                }
+                if(file_blocks == FILE_BLOCKS)
+                {
+                    file_blocks = 0;
+                    close_file();
+                    recordstatus_ptr->file_created = 0;
+                    recordstatus_ptr->recording = 0;
+                }
             }  
         }else
         {   
