@@ -163,7 +163,7 @@ static void *run(hashpipe_thread_args_t * args)
                 else if(pkt_type == 1)// voltage data Ver1.0--4 adc inputs
                     write_data(db->block[block_idx].blk_data,VOLV1_PER_BLOCK*VOLV1_FRAME_SIZE);
                 else if(pkt_type == 2)// voltage data Ver2.0--2 adc inputs
-                    write_data(db->block[block_idx].blk_data,VOLV1_PER_BLOCK*VOLV2_FRAME_SIZE);
+                    write_data(db->block[block_idx].blk_data,VOLV2_PER_BLOCK*VOLV2_FRAME_SIZE);
             }  
         }else
         {   
