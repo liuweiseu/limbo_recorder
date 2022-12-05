@@ -11,7 +11,8 @@
 #define FREQ                    (500 * 1000 * 1000)
 #define VOL_BYTES               1               // each voltage data is 1 bytes, containing 4 bits real and 4 bit imaginary
 #define FILESIZE_PER_SEC        (FREQ * VOL_BYTES)
-#define FILE_BLOCKS             (FILESIZE_PER_SEC / MAX_BYTES_PER_BLOCK)
+#define VOL_FILE_BLOCKS         (FILESIZE_PER_SEC / MAX_BYTES_PER_BLOCK)
+#define VOL_FILE_NUM            16
 
 #define CACHE_ALIGNMENT         8
 #define N_BLOCKS                64 

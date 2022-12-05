@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <dirent.h>
 
 #include "hashpipe.h"
 #include "databuf.h"
@@ -82,6 +83,33 @@ static void get_snap_settings(obs_header_t *obs_header)
     memcpy(obs_header->FPG, obs_settings_ptr->FPG, FPG_LEN);
 }
 
+/*
+Scan Voltage files in the directory.
+para:
+--fname_string: file name should start with this string.
+                For example, when pkt_type is 1, it's "VoltageV1",
+                             when pkt_type is 2, it's "VoltageV2".  
+--file_list   : voltage files in the directory.
+                The max number of the voltage files should be 16.
+*/
+static int scan_voltage_files(char *fname_string, char (*file_list)[128])
+{
+    struct dirent **entry_list, *entry;
+    int count = 0, i = 0, j = 0;
+    count = scandir("./",&entry_list, 0, alphasort);
+    if(count == 0)
+        return 0;
+    for(i = 0; i < count; i++)
+    {
+        entry = entry_list[i];
+        if(!strncmp(entry->d_name,fname_string, strlen(fname_string)-1))
+        {
+            memcpy(file_list[j],entry->d_name, strlen(entry->d_name));
+            j++;
+        }
+    }
+}
+
 static int init(hashpipe_thread_args_t *args) {
     // Get info from status buffer if present
     hashpipe_status_t st = args->st;
@@ -103,13 +131,18 @@ static void *run(hashpipe_thread_args_t * args)
     uint32_t record_flag = 0;
     uint32_t pkt_type = 0;
     uint32_t file_blocks = 0;
+    uint32_t file_count = 0;
     char filename[128]={0};
+    char file_list[VOL_FILE_NUM][128] = {0};
     record_status_t recordstatus;
     record_status_t *recordstatus_ptr = &recordstatus;
     memset(recordstatus_ptr->filename,0,128);
     recordstatus_ptr->file_created = 0;
     recordstatus_ptr->recording = 0;
     
+    /* scan voltage files first*/
+    file_count = scan_voltage_files("Voltage", file_list);
+    printf("file_count=%d\n", file_count);
     /* Main loop */
     while (run_threads()) {
         hashpipe_status_lock_safe(&st);
@@ -141,10 +174,17 @@ static void *run(hashpipe_thread_args_t * args)
         {
             if(recordstatus_ptr->file_created == 0)
             {
+                // before creating a new file, we need to delete an old file,
+                // to make sure the max number of files is VOL_FILE_NUM.
+                file_count = file_count%VOL_FILE_NUM;
+                remove(file_list[file_count]);
+                memset(file_list[file_count],0,128);
                 // if we are going to record data, but the file hasn't been created,
                 // let's create the file.
                 memset(recordstatus_ptr->filename,0,128);
                 create_filename(recordstatus_ptr->filename,pkt_type);
+                memcpy(file_list[file_count], recordstatus_ptr->filename, strlen(recordstatus_ptr->filename));
+                file_count++;
                 create_file(recordstatus_ptr->filename);
                 recordstatus_ptr->file_created = 1;
                 recordstatus_ptr->recording = 0;
@@ -171,7 +211,7 @@ static void *run(hashpipe_thread_args_t * args)
                     write_data(db->block[block_idx].blk_data,VOLV2_PER_BLOCK*VOLV2_FRAME_SIZE);
                     file_blocks++;
                 }
-                if(file_blocks == FILE_BLOCKS)
+                if(file_blocks == VOL_FILE_BLOCKS)
                 {
                     file_blocks = 0;
                     close_file();
