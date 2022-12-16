@@ -54,7 +54,7 @@ Normally, you just need to run this script one time. Then you can run ```df -h``
     ./umount_ramdisk.sh
 ```
 ## File Format
-We will store two kind of data: Spectra data and Voltage data.  
+We will store two kinds of data: Spectra data and Voltage data.  
 ### Spectra data file
 * file name  
 The name of the spectra data file starts with "Spectra_", following the UTC time when the file is generated.  For example "Spectra_20221110042101.dat" means the file was generated at 04:21:01 on 11/10/2022.  
@@ -113,7 +113,7 @@ Each data frame also contains three parts:
 ```
     uint64_t cnt
 ```
-***Notice***: Only 56 bits are valid in the cnt value.
+***Notice***: Only 56 bits are valid in the cnt value.  
 3. Voltage data
 ```
     int8_t voltage[4096]
