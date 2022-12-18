@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Starting a new instance..."
+echo "Starting new instances..."
 
 pkill -f "hashpipe -p limbo"
 
@@ -8,28 +8,41 @@ hostname=`hostname -s`
 log_timestamp=`date +%Y%m%d_%H%M%S`
 
 if [ $# -eq 0 ]; then
-    pkt_type=0
-    if [ -d ../data ]; then
-        cd ../data
-    else
-        mkdir ../data
-        cd ../data
-    fi
-elif [ $1 = 'voltagev1' ]; then
-    pkt_type=1
-    cd /mnt/ramdisk
-elif [ $1 = 'voltagev2' ]; then
-    pkt_type=2
-    cd /mnt/ramdisk
-else 
-    echo 'Invalid parameter.'
-    exit
+    spectra_eth="enp3s0"
+    voltage_eth="enp133s0"
+else
+    spectra_eth=$1
+    voltage_eth=$2
 fi
 
-hashpipe -p limbo.so -I 0 net_thread output_thread 1> ${hostname}.out.${log_timestamp} \
-                                                   2> ${hostname}.err.${log_timestamp} &
+s=`df -h`
+if [[ $s == *"/mnt/ramdisk"*  ]]; then
+    echo "Voltage data directory exists."
+else
+    sudo mount -t tmpfs -o rw,size=16G tmpfs /mnt/ramdisk
+    echo "ramdisk created."
+fi
 
-hashpipe_check_status -I 0 -k PKT_TYPE -i $pkt_type
+if [ -d ../data ]; then
+    echo "spectra data directory exists."
+else
+    mkdir ../data
+    echo "spectra data directory created."
+fi
 
+cd ../data
+hashpipe -p limbo.so -I 0 net_thread output_thread  -o PKT_TYPE=0 \
+                                                    -o BINDHOST=$spectra_eth \
+                                                    1> ${hostname}.spectra.out.${log_timestamp} \
+                                                    2> ${hostname}.spectra.err.${log_timestamp} &
 echo "Instance 0 started."
-echo 'data path:' `pwd`
+echo 'Sepctra data path:' `pwd`
+
+cd /mnt/ramdisk
+hashpipe -p limbo.so -I 1 net_thread output_thread  -o PKT_TYPE=2 \
+                                                    -o BINDHOST=$voltage_eth \
+                                                    1> ${hostname}.voltage.out.${log_timestamp} \
+                                                    2> ${hostname}.voltage.err.${log_timestamp} &
+echo "Instance 1 started."
+echo 'Voltage data path:' `pwd`
+

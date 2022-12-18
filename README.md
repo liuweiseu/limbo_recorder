@@ -7,22 +7,21 @@ The code is used for recording data for LIMBO project.
     sudo make install
 ```
 2. Start the data Recorder    
-* record spectra data
 ```
     cd ./scripts
     ./restart_recorder.sh
 ```
-When you run this script, a "data" directory will be created the project directory.  
-* record voltage data
-```
-    ./restart_recorder.sh voltagev2
-```
-When you run this script, the data files will be created in ramdisk(/mnt/ramdisk). A new file will be created every second. The max number of the voltage data files is 16 by default. The oldest file will be deleted automatically, when the file number reaches to the max.  
-The max number of voltage file names is defined in databuf.h
+When you run this script, a "data" directory will be created the project directory, which is used for storing spectra data. Voltage data files will be created in ramdisk(/mnt/ramdisk). A new file will be created every second. The max number of the voltage data files is 16 by default. The oldest file will be deleted automatically, when the file number reaches to the max. The max number of voltage file names is defined in databuf.h
 ```
     #define VOL_FILE_NUM            16
 ```
-***TO-DO***: set the ethernet port and port number dynamically.   
+enp3s0 and enp133s0 on the server are used for transferring spectra data and voltage data. If you want to specify the ethernet ports for spectra and voltage data, you can run the script like this:
+```
+    ./restart_recorder.sh eth0 eth1
+```
+eth0 is used for transferring spectra data and eth1 is used for transferring voltage data.  
+***TO-DO***: set port number dynamically. 
+
 3. Enable recording
 ```
     ./enable_record.sh
@@ -66,7 +65,7 @@ The size of file header is 1024 bytes for now, which includes the fpg file we us
           "Time": 1668058079.2594,
     "SampleFreq": 500,
         "AccLen": 127,
-      "FFTShitf": 65535,
+      "FFTShift": 65535,
        "Scaling": 0,
      "SpecCoeff": 7,
      "AdcDelay0": 5,
@@ -114,6 +113,7 @@ Each data frame also contains three parts:
     uint64_t cnt
 ```
 ***Notice***: Only 56 bits are valid in the cnt value.  
+
 3. Voltage data
 ```
     int8_t voltage[4096]

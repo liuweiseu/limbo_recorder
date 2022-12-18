@@ -133,7 +133,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 		obs_settings->TIME      = atof(reply->element[0]->str);	
 		obs_settings->SAMPLEFREQ= atoi(reply->element[1]->str);
         obs_settings->ACCLEN    = atoi(reply->element[2]->str);
-        obs_settings->FFTSHITF  = atoi(reply->element[3]->str);
+        obs_settings->FFTSHIFT  = atoi(reply->element[3]->str);
         obs_settings->SCALING   = atoi(reply->element[4]->str);
         obs_settings->SPECCOEFF = atoi(reply->element[5]->str);
         obs_settings->ADCDELAY[0] = atoi(reply->element[6]->str);
