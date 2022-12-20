@@ -13,6 +13,7 @@ int write_header(obs_header_t *obs_header){
                   \"Time\": %10f,        \
                   \"SampleFreq\": %4u,   \
                   \"AccLen\": %4u,       \
+                  \"AdcCoarseGain\": %4u,\
                   \"FFTShift\": %5u,     \
                   \"Scaling\": %4u,      \
                   \"SpecCoeff\": %4u,    \
@@ -28,6 +29,7 @@ int write_header(obs_header_t *obs_header){
                     obs_header->TIME,       \
                     obs_header->SAMPLEFREQ, \
                     obs_header->ACCLEN,     \
+                    obs_header->ADCCOARSEGAIN,\
                     obs_header->FFTSHIFT,   \
                     obs_header->SCALING,    \
                     obs_header->SPECCOEFF,  \

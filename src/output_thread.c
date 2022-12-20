@@ -74,6 +74,7 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_settings_t *obs_settings_ptr = &obs_settings;
     get_obs_info_from_redis(obs_settings_ptr,REDIS_HOST, REDIS_PORT);
     obs_header->ACCLEN      = obs_settings_ptr->ACCLEN;
+    obs_header->ADCCOARSEGAIN = obs_settings_ptr->ADCCOARSEGAIN;
     memcpy(obs_header->ADCDELAY, obs_settings_ptr->ADCDELAY, 8*sizeof(unsigned int));
     obs_header->FFTSHIFT    = obs_settings_ptr->FFTSHIFT;
     obs_header->SAMPLEFREQ  = obs_settings_ptr->SAMPLEFREQ;

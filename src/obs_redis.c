@@ -117,6 +117,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 	if(!rv) rv = redis_get(c_observatory, &reply,"hmget OBS_SETTINGS   TimeStamp    \
                                                                        SampleFreq   \
                                                                        AccLen       \
+                                                                       AdcCoarseGain\
                                                                        FFTShift     \
                                                                        Scaling      \
                                                                        SpecCoeff    \
@@ -133,19 +134,20 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 		obs_settings->TIME      = atof(reply->element[0]->str);	
 		obs_settings->SAMPLEFREQ= atoi(reply->element[1]->str);
         obs_settings->ACCLEN    = atoi(reply->element[2]->str);
-        obs_settings->FFTSHIFT  = atoi(reply->element[3]->str);
-        obs_settings->SCALING   = atoi(reply->element[4]->str);
-        obs_settings->SPECCOEFF = atoi(reply->element[5]->str);
-        obs_settings->ADCDELAY[0] = atoi(reply->element[6]->str);
-        obs_settings->ADCDELAY[1] = atoi(reply->element[7]->str);
-        obs_settings->ADCDELAY[2] = atoi(reply->element[8]->str);
-        obs_settings->ADCDELAY[3] = atoi(reply->element[9]->str);
-        obs_settings->ADCDELAY[4] = atoi(reply->element[10]->str);
-        obs_settings->ADCDELAY[5] = atoi(reply->element[11]->str);
-        obs_settings->ADCDELAY[6] = atoi(reply->element[12]->str);
-        obs_settings->ADCDELAY[7] = atoi(reply->element[13]->str);
+        obs_settings->ADCCOARSEGAIN = atoi(reply->element[3]->str);
+        obs_settings->FFTSHIFT  = atoi(reply->element[4]->str);
+        obs_settings->SCALING   = atoi(reply->element[5]->str);
+        obs_settings->SPECCOEFF = atoi(reply->element[6]->str);
+        obs_settings->ADCDELAY[0] = atoi(reply->element[7]->str);
+        obs_settings->ADCDELAY[1] = atoi(reply->element[8]->str);
+        obs_settings->ADCDELAY[2] = atoi(reply->element[9]->str);
+        obs_settings->ADCDELAY[3] = atoi(reply->element[10]->str);
+        obs_settings->ADCDELAY[4] = atoi(reply->element[11]->str);
+        obs_settings->ADCDELAY[5] = atoi(reply->element[12]->str);
+        obs_settings->ADCDELAY[6] = atoi(reply->element[13]->str);
+        obs_settings->ADCDELAY[7] = atoi(reply->element[14]->str);
         memset(obs_settings->FPG,0,FPG_LEN);
-        memcpy(obs_settings->FPG,reply->element[14]->str,reply->element[14]->len);
+        memcpy(obs_settings->FPG,reply->element[15]->str,reply->element[15]->len);
 	}
    
     if(c) redisFree(c);       // TODO do I really want to free each time?

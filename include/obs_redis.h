@@ -7,6 +7,7 @@ typedef struct obs_settings{
     char FPG[FPG_LEN];
     unsigned int SAMPLEFREQ;
     unsigned int ACCLEN;
+    unsigned int ADCCOARSEGAIN;
     unsigned int FFTSHIFT;
     unsigned int SCALING;
     unsigned int SPECCOEFF;
