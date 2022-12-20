@@ -65,6 +65,7 @@ The size of file header is 1024 bytes for now, which includes the fpg file we us
           "Time": 1668058079.2594,
     "SampleFreq": 500,
         "AccLen": 127,
+ "AdcCoarseGain": 16,
       "FFTShift": 65535,
        "Scaling": 0,
      "SpecCoeff": 7,
