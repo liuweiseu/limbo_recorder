@@ -33,7 +33,7 @@ static int init(hashpipe_thread_args_t * args){
     // define default network params
     char bindhost[128];
     int bindport = 5000;
-    uint32_t pkt_type = 1;              // pkt type, 0: spectra; 1: voltage(500MSps); 2: voltage(1000MSps)
+    uint32_t pkt_type = 2;              // pkt type, 0: spectra; 1: voltage(500MSps); 2: voltage(1000MSps)
     hashpipe_status_t st = args->st;
     //strcpy(bindhost, "0.0.0.0");
     strcpy(bindhost, "enp3s0");
@@ -41,11 +41,10 @@ static int init(hashpipe_thread_args_t * args){
     hashpipe_status_lock_safe(&st);
 
     // Get info from status buffer if present
-    //hgets(st.buf, "BINDHOST", 128, bindhost);
+    hgets(st.buf, "BINDHOST", 128, bindhost);
     //hgeti4(st.buf, "BINDPORT", &bindport);
 
     // Store bind host/port info and other info in status buffer
-    hputs(st.buf, "BINDHOST", bindhost);
 	hputi4(st.buf, "BINDPORT", bindport);
     hputi8(st.buf, "NPACKETS", 0);
     hputu4(st.buf, "RECORD", 0);

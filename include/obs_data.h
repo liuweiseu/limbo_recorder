@@ -10,7 +10,8 @@ typedef struct obs_header{
     char FPG[FPG_LEN];
     unsigned int SAMPLEFREQ;
     unsigned int ACCLEN;
-    unsigned int FFTSHITF;
+    unsigned int ADCCOARSEGAIN;
+    unsigned int FFTSHIFT;
     unsigned int SCALING;
     unsigned int SPECCOEFF;
     unsigned int ADCDELAY[8];
