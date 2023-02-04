@@ -201,7 +201,12 @@ static void *run(hashpipe_thread_args_t * args)
             if(recordstatus_ptr->recording == 1)
             {
                 if(pkt_type == 0)// spectra data
+                {
                     write_data(db->block[block_idx].blk_data,SPECTRAS_PER_BLOCK*SPECTRA_FRAME_SIZE);
+                    close_file();
+                    recordstatus_ptr->file_created = 0;
+                    recordstatus_ptr->recording = 0;
+                }
                 else if(pkt_type == 1)// voltage data Ver1.0--4 adc inputs
                 {
                     write_data(db->block[block_idx].blk_data,VOLV1_PER_BLOCK*VOLV1_FRAME_SIZE);

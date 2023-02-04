@@ -9,7 +9,7 @@ log_timestamp=`date +%Y%m%d_%H%M%S`
 
 if [ $# -eq 0 ]; then
     spectra_eth="enp3s0"
-    voltage_eth="enp133s0"
+    voltage_eth="enp136s0"
 else
     spectra_eth=$1
     voltage_eth=$2

@@ -41,11 +41,10 @@ static int init(hashpipe_thread_args_t * args){
     hashpipe_status_lock_safe(&st);
 
     // Get info from status buffer if present
-    //hgets(st.buf, "BINDHOST", 128, bindhost);
+    hgets(st.buf, "BINDHOST", 128, bindhost);
     //hgeti4(st.buf, "BINDPORT", &bindport);
 
     // Store bind host/port info and other info in status buffer
-    hputs(st.buf, "BINDHOST", bindhost);
 	hputi4(st.buf, "BINDPORT", bindport);
     hputi8(st.buf, "NPACKETS", 0);
     hputu4(st.buf, "RECORD", 0);
