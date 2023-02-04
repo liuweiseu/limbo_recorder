@@ -6,41 +6,47 @@ The code is used for recording data for LIMBO project.
     make
     sudo make install
 ```
+2. Set Environment Variables  
+You need to set three environment variables:  
+(1) LIMBO_DATA_DIR, which defines the spectra data path;  
+(2) SPECTRA_ETH, which defines the ethernet port for spectra data;  
+(3) VOLTAGE_ETH, which defines the ethernet port for voltage data.  
+(***The following values are the default vaules. If you're happy with them, you don't need to set them again.***)
+```
+    export LIMBO_DATA_DIR=/home/obs/data
+    export SPECTRA_ETH=enp3s0
+    export VOLTAGE_ETH=enp136s0
+```
+
 2. Start the data Recorder    
 ```
-    cd ./scripts
-    ./restart_recorder.sh
+    restart_recorder.sh
 ```
-When you run this script, a "data" directory will be created the project directory, which is used for storing spectra data. Voltage data files will be created in ramdisk(/mnt/ramdisk). A new file will be created every second. The max number of the voltage data files is 16 by default. The oldest file will be deleted automatically, when the file number reaches to the max. The max number of voltage file names is defined in databuf.h
+When you run this script, a "data" directory will be created defined by "LIMBO_DATA_DIR", which is used for storing spectra data. Voltage data files will be created in ramdisk(/mnt/ramdisk). A new file will be created every second. The max number of the voltage data files is 16 by default. The oldest file will be deleted automatically, when the file number reaches to the max. The max number of voltage file names is defined in databuf.h
 ```
     #define VOL_FILE_NUM            16
-```
-enp3s0 and enp133s0 on the server are used for transferring spectra data and voltage data. If you want to specify the ethernet ports for spectra and voltage data, you can run the script like this:
-```
-    ./restart_recorder.sh eth0 eth1
-```
-eth0 is used for transferring spectra data and eth1 is used for transferring voltage data.  
+```  
 ***TO-DO***: set port number dynamically. 
 
 3. Enable recording
 ```
-    ./enable_record.sh
+    enable_record.sh
 ```
-When you run this script, a data file will be created in the "data" directory.  
+When you run this script, a new data file will be created in the "data" directory every 4s.  
 
 4. Disable recording
 ```
-    ./disbale_record.sh
+    disbale_record.sh
 ```
-This script will stop recording data. Once you run ```./enable_record.sh``` again, a new data file will be created.  
+This script will stop recording data. Once you run ```enable_record.sh``` again, a new data file will be created.  
 
 5. Stop the data Recorder
 ```
-    ./stop_recorder.sh
+    stop_recorder.sh
 ```
 6. mount ramdisk
 ```
-    ./mount_ramdisk.sh 
+    mount_ramdisk.sh 
 ```
 Normally, you just need to run this script one time. Then you can run ```df -h``` to make sure the ramdisk is created.
 ```
@@ -50,7 +56,7 @@ Normally, you just need to run this script one time. Then you can run ```df -h``
 ```
 7. umount ramdisk
 ```
-    ./umount_ramdisk.sh
+    umount_ramdisk.sh
 ```
 ## File Format
 We will store two kinds of data: Spectra data and Voltage data.  

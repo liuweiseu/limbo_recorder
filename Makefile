@@ -9,7 +9,9 @@ LIB_INCLUDES = -I./include \
 LIB_LINKS	 = -L. -L/usr/local/lib \
 					-lstdc++ -lhiredis\
 				-lhashpipe -lrt -lm
+
 LIB_DIR		 = lib
+SCRIPT_DIR	 = scripts
 
 LIB_SRCS = ${wildcard ./src/*.c}
 
@@ -31,8 +33,11 @@ prefix=/usr/local
 LIBDIR=$(prefix)/lib
 BINDIR=$(prefix)/bin
 install-lib: $(LIB_DIR)/$(LIB_TARGET)
-	mkdir -p "$(DESTDIR)$(LIBDIR)"
-	install -p $^ "$(DESTDIR)$(LIBDIR)"
-install: install-lib
+	mkdir -p "$(LIBDIR)"
+	install -p $^ "$(LIBDIR)"
+install-scripts: $(SCRIPT_DIR)/*.sh
+	install -p $^ "$(BINDIR)"
+
+install: install-lib install-scripts
 
 .PHONY: all tags clean install install-lib

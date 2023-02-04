@@ -7,13 +7,26 @@ pkill -f "hashpipe -p limbo"
 hostname=`hostname -s`
 log_timestamp=`date +%Y%m%d_%H%M%S`
 
-if [ $# -eq 0 ]; then
+if [ -z ${LIMBO_DATA_DIR} ];then 
+    limbo_data_dir="/home/obs/data"
+else
+    limbo_data_dir=${LIMBO_DATA_DIR}
+fi
+
+if [ -z ${SPECTRA_ETH} ];then 
     spectra_eth="enp3s0"
+else
+    spectra_eth=${SPECTRA_ETH}
+fi
+
+if [ -z ${VOLTAGE_ETH} ];then 
     voltage_eth="enp136s0"
 else
-    spectra_eth=$1
-    voltage_eth=$2
+    voltage_eth=${VOLTAGE_ETH}
 fi
+
+echo "Spectra Data Ethernet Port: ${spectra_eth}"
+echo "Voltage Data Ethernet Port: ${voltage_eth}"
 
 s=`df -h`
 if [[ $s == *"/mnt/ramdisk"*  ]]; then
@@ -23,14 +36,14 @@ else
     echo "ramdisk created."
 fi
 
-if [ -d ../data ]; then
+if [ -d ${limbo_data_dir} ]; then
     echo "spectra data directory exists."
 else
-    mkdir ../data
+    mkdir ${limbo_data_dir}
     echo "spectra data directory created."
 fi
 
-cd ../data
+cd ${limbo_data_dir}
 hashpipe -p limbo.so -I 0 net_thread output_thread  -o PKT_TYPE=0 \
                                                     -o BINDHOST=$spectra_eth \
                                                     1> ${hostname}.spectra.out.${log_timestamp} \
