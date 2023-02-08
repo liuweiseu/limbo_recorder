@@ -32,7 +32,7 @@ When you run this script, a "data" directory will be created defined by "LIMBO_D
 ```
     enable_record.sh
 ```
-When you run this script, a new data file will be created in the "data" directory every 4s.  
+When you run this script, a new data file will be created in the "data" directory, and it stores 4096 spectra data.  
 
 4. Disable recording
 ```
