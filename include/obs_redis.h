@@ -9,6 +9,7 @@ typedef struct obs_settings{
     unsigned int ACCLEN;
     unsigned int ADCCOARSEGAIN;
     unsigned int FFTSHIFT;
+    unsigned int DATASEL;
     unsigned int SCALING;
     unsigned int SPECCOEFF;
     unsigned int ADCDELAY[8];

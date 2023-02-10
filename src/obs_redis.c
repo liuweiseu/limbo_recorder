@@ -129,7 +129,8 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
                                                                        AdcDelay5    \
                                                                        AdcDelay6    \
                                                                        AdcDelay7    \
-                                                                       fpg");
+                                                                       fpg          \
+                                                                       data_sel");
 	if(!rv) {
 		obs_settings->TIME      = atof(reply->element[0]->str);	
 		obs_settings->SAMPLEFREQ= atoi(reply->element[1]->str);
@@ -148,6 +149,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         obs_settings->ADCDELAY[7] = atoi(reply->element[14]->str);
         memset(obs_settings->FPG,0,FPG_LEN);
         memcpy(obs_settings->FPG,reply->element[15]->str,reply->element[15]->len);
+        obs_settings->DATASEL = atoi(reply->element[16]->str);
 	}
    
     if(c) redisFree(c);       // TODO do I really want to free each time?

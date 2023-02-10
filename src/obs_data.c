@@ -15,6 +15,7 @@ int write_header(obs_header_t *obs_header){
                   \"AccLen\": %4u,       \
                   \"AdcCoarseGain\": %4u,\
                   \"FFTShift\": %5u,     \
+                  \"DataSel\": %4u,      \
                   \"Scaling\": %4u,      \
                   \"SpecCoeff\": %4u,    \
                   \"AdcDelay0\": %4u,    \
@@ -31,6 +32,7 @@ int write_header(obs_header_t *obs_header){
                     obs_header->ACCLEN,     \
                     obs_header->ADCCOARSEGAIN,\
                     obs_header->FFTSHIFT,   \
+                    obs_header->DATASEL,    \
                     obs_header->SCALING,    \
                     obs_header->SPECCOEFF,  \
                     obs_header->ADCDELAY[0],\

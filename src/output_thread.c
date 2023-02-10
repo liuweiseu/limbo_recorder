@@ -82,6 +82,7 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_header->SPECCOEFF   = obs_settings_ptr->SPECCOEFF;
     obs_header->TIME        = obs_settings_ptr->TIME;
     memcpy(obs_header->FPG, obs_settings_ptr->FPG, FPG_LEN);
+    obs_header->DATASEL     = obs_settings_ptr->DATASEL;
 }
 
 /*
