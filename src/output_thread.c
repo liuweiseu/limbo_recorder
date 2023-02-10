@@ -178,7 +178,8 @@ static void *run(hashpipe_thread_args_t * args)
                 // before creating a new file, we need to delete an old file,
                 // to make sure the max number of files is VOL_FILE_NUM.
                 file_count = file_count%VOL_FILE_NUM;
-                remove(file_list[file_count]);
+                if(pkt_type != 0)
+                    remove(file_list[file_count]);
                 memset(file_list[file_count],0,128);
                 // if we are going to record data, but the file hasn't been created,
                 // let's create the file.
