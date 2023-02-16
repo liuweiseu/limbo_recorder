@@ -72,7 +72,16 @@ static void get_snap_settings(obs_header_t *obs_header)
 {
     obs_settings_t obs_settings;
     obs_settings_t *obs_settings_ptr = &obs_settings;
-    get_obs_info_from_redis(obs_settings_ptr,REDIS_HOST, REDIS_PORT);
+    ana_settings_t ana_settings;
+    ana_settings_t *ana_settings_ptr = &ana_settings;
+    telescope_settings_t telescope_settings;
+    telescope_settings_t *telescope_settings_ptr = &telescope_settings;
+
+    memcpy(obs_header->SWVER, SW_VER, VER_STR_LEN);
+    obs_header->HDRSIZE = HDR_SIZE;
+
+    get_obs_info_from_redis(obs_settings_ptr,ana_settings_ptr,telescope_settings_ptr,REDIS_HOST, REDIS_PORT);
+    // get digial parameters
     obs_header->ACCLEN      = obs_settings_ptr->ACCLEN;
     obs_header->ADCCOARSEGAIN = obs_settings_ptr->ADCCOARSEGAIN;
     memcpy(obs_header->ADCDELAY, obs_settings_ptr->ADCDELAY, 8*sizeof(unsigned int));
@@ -83,9 +92,14 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_header->TIME        = obs_settings_ptr->TIME;
     memcpy(obs_header->FPG, obs_settings_ptr->FPG, FPG_LEN);
     obs_header->DATASEL     = obs_settings_ptr->DATASEL;
-
-    memcpy(obs_header->SWVER, SW_VER, VER_STR_LEN);
-    obs_header->HDRSIZE = HDR_SIZE;
+    // get analog parameters
+    obs_header->RF_LO_HZ    = ana_settings_ptr->RF_LO_HZ;
+    // get telescope parameters
+    memcpy(obs_header->TARGET_RA_DEG, telescope_settings_ptr->TARGET_RA_DEG, COORD_LEN);
+    memcpy(obs_header->TARGET_DEC_DEG, telescope_settings_ptr->TARGET_DEC_DEG, COORD_LEN);
+    obs_header->POINTING_AZ_DEG = telescope_settings_ptr->POINTING_AZ_DEG;
+    obs_header->POINTING_EL_DEG = telescope_settings_ptr->POINTING_EL_DEG;
+    obs_header->POINTING_UPDATED= telescope_settings_ptr->POINTING_UPDATED;
 }
 
 /*

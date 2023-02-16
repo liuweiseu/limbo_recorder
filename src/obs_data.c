@@ -30,7 +30,13 @@ int write_header(obs_header_t *obs_header){
                   \"AdcDelay4\": %4u,    \
                   \"AdcDelay5\": %4u,    \
                   \"AdcDelay6\": %4u,    \
-                  \"AdcDelay7\": %4u     \
+                  \"AdcDelay7\": %4u,     \
+                  \"RF_Lo_Hz\" : %10u,    \
+                  \"Target_RA_Deg\":\"%s\",  \
+                  \"Target_EL_Deg\":\"%s\",  \
+                  \"Pointing_AZ\": %2.2f,    \
+                  \"Pointing_EL\": %2.2f,    \
+                  \"Pointing_Updated\": %10f \
                 }", obs_header->SWVER,      \
                     obs_header->FPG,        \
                     obs_header->TIME,       \
@@ -48,7 +54,13 @@ int write_header(obs_header_t *obs_header){
                     obs_header->ADCDELAY[4],\
                     obs_header->ADCDELAY[5],\
                     obs_header->ADCDELAY[6],\
-                    obs_header->ADCDELAY[7]
+                    obs_header->ADCDELAY[7],\
+                    obs_header->RF_LO_HZ,   \
+                    obs_header->TARGET_RA_DEG,\
+                    obs_header->TARGET_DEC_DEG,\
+                    obs_header->POINTING_AZ_DEG,\
+                    obs_header->POINTING_EL_DEG,\
+                    obs_header->POINTING_UPDATED
                     );
     // we use the first HDR_SIZE bytes for header
     return fseek(fp, HDR_SIZE + 4, SEEK_SET);

@@ -59,7 +59,9 @@ static int redis_get(redisContext *c, redisReply ** reply, const char * query) {
 }
 
 //----------------------------------------------------------
-int get_obs_info_from_redis(obs_settings_t * obs_settings,     
+int get_obs_info_from_redis(obs_settings_t * obs_settings,  
+                            ana_settings_t * ana_settings,
+                            telescope_settings_t * telescope_settings,
                             char    *hostname, 
                             int     port) {
 //----------------------------------------------------------
@@ -74,7 +76,6 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
     const char * host_pw = "limbo";
 
     char computehostname[32];
-    char query_string[64];
 
     struct timeval timeout = { 1, 500000 }; // 1.5 seconds
 
@@ -110,26 +111,28 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 	gethostname(computehostname, sizeof(computehostname));
     
 	// Get observatory data
-	// RA and DEC gathered by name rather than a looped redis query so that all meta data is of a 
-	// single point in time
-	if(!rv) rv = redis_get(c_observatory, &reply,"hmget OBS_SETTINGS   TimeStamp    \
-                                                                       SampleFreq   \
-                                                                       AccLen       \
-                                                                       AdcCoarseGain\
-                                                                       FFTShift     \
-                                                                       Scaling      \
-                                                                       SpecCoeff    \
-                                                                       AdcDelay0    \
-                                                                       AdcDelay1    \
-                                                                       AdcDelay2    \
-                                                                       AdcDelay3    \
-                                                                       AdcDelay4    \
-                                                                       AdcDelay5    \
-                                                                       AdcDelay6    \
-                                                                       AdcDelay7    \
-                                                                       fpg          \
-                                                                       data_sel");
-	if(!rv) {
+    char query_string[2048] = {0};
+    // get digial settings from redis database
+    sprintf(query_string, "hmget %s %s", DIGITAL_KEY, "TimeStamp    \
+                                                       SampleFreq   \
+                                                       AccLen       \
+                                                       AdcCoarseGain\
+                                                       FFTShift     \
+                                                       Scaling      \
+                                                       SpecCoeff    \
+                                                       AdcDelay0    \
+                                                       AdcDelay1    \
+                                                       AdcDelay2    \
+                                                       AdcDelay3    \
+                                                       AdcDelay4    \
+                                                       AdcDelay5    \
+                                                       AdcDelay6    \
+                                                       AdcDelay7    \
+                                                       fpg          \
+                                                       data_sel");
+    if(!rv) rv = redis_get(c_observatory, &reply, query_string);
+	if(!rv)
+    {
 		obs_settings->TIME      = atof(reply->element[0]->str);	
 		obs_settings->SAMPLEFREQ= atoi(reply->element[1]->str);
         obs_settings->ACCLEN    = atoi(reply->element[2]->str);
@@ -149,7 +152,35 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         memcpy(obs_settings->FPG,reply->element[15]->str,reply->element[15]->len);
         obs_settings->DATASEL = atoi(reply->element[16]->str);
 	}
-   
+
+    // get analog settings
+    memset(query_string, 0, 2048);
+    sprintf(query_string, "hmget %s %s", ANALOG_KEY, "RF_Lo_Hz");
+    if(!rv) rv = redis_get(c_observatory, &reply, query_string);
+    if(!rv)
+    {
+        ana_settings->RF_LO_HZ = atoi(reply->element[0]->str);
+    }
+
+    //get telescope settings
+    memset(query_string, 0, 2048);
+    sprintf(query_string, "hmget %s %s", TELESCOPE_KEY, "Target_RA_Deg  \
+                                                         Target_DEC_Deg \
+                                                         Pointing_AZ \
+                                                         Pointing_EL \
+                                                         Pointing_Updated");
+    if(!rv) rv = redis_get(c_observatory, &reply, query_string);
+    if(!rv)
+    {
+        memset(telescope_settings->TARGET_RA_DEG,0,COORD_LEN);
+        memset(telescope_settings->TARGET_DEC_DEG,0,COORD_LEN);
+        memcpy(telescope_settings->TARGET_RA_DEG, reply->element[0]->str, reply->element[0]->len);
+        memcpy(telescope_settings->TARGET_DEC_DEG, reply->element[1]->str, reply->element[1]->len);
+        telescope_settings->POINTING_AZ_DEG = atof(reply->element[2]->str);
+        telescope_settings->POINTING_EL_DEG = atof(reply->element[3]->str);
+        telescope_settings->POINTING_UPDATED = atof(reply->element[4]->str);
+    }
+
     if(c) redisFree(c);       // TODO do I really want to free each time?
     if(c_observatory) redisFree(c_observatory);       // TODO do I really want to free each time?
 

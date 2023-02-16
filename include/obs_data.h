@@ -6,8 +6,8 @@
 #define FPG_LEN         128
 #define SW_VER          "0.0.1"
 #define VER_STR_LEN     16
-#define HDR_SIZE        1024
-
+#define HDR_SIZE        2048
+#define COORD_LEN       16
 typedef struct obs_header{
     double TIME;
     char FPG[FPG_LEN];
@@ -21,6 +21,12 @@ typedef struct obs_header{
     unsigned int SCALING;
     unsigned int SPECCOEFF;
     unsigned int ADCDELAY[8];
+    unsigned int RF_LO_HZ;
+    char TARGET_RA_DEG[COORD_LEN];
+    char TARGET_DEC_DEG[COORD_LEN];
+    double POINTING_AZ_DEG;
+    double POINTING_EL_DEG;
+    double POINTING_UPDATED;
 }obs_header_t;
 
 typedef struct record_status{
