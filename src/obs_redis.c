@@ -76,8 +76,6 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
     char computehostname[32];
     char query_string[64];
 
-    double mjd_now;  
-
     struct timeval timeout = { 1, 500000 }; // 1.5 seconds
 
 	// Local instrument DB
@@ -188,20 +186,15 @@ int redis_set(redisContext *c, redisReply ** reply, const char * query){
     return(rv); 
 }
 
+//----------------------------------------------------------
 int set_files_query(char *hostname, int port, char *filename){
+//----------------------------------------------------------
     redisContext *c;
     redisContext *c_observatory;
     redisReply *reply;
     int rv = 0;
 
-    const char * host_observatory = "localhost";
-    int port_observatory = 6379;
-    const char * host_pw = "limbo";
-
-    char computehostname[32];
-    char query_string[64];
-
-    double mjd_now;  
+    char query_string[128];
 
     struct timeval timeout = { 1, 500000 }; // 1.5 seconds
 
@@ -217,7 +210,7 @@ int set_files_query(char *hostname, int port, char *filename){
         }
         exit(1);
     }
-    char cmd[128];
-    sprintf(cmd, "LPUSH limbo:raw_pspec_files %s", filename);
-    (redisReply *)redisCommand(c, cmd);
+    sprintf(query_string, "LPUSH limbo:raw_pspec_files %s", filename);
+    rv = redis_set(c, &reply, query_string);
+    return rv;
 }
