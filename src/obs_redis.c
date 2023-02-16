@@ -66,21 +66,16 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
                             int     port) {
 //----------------------------------------------------------
 
-    redisContext *c;
+//   redisContext *c;
     redisContext *c_observatory;
     redisReply *reply;
     int rv = 0;
-
-    const char * host_observatory = "localhost";
-    int port_observatory = 6379;
-    const char * host_pw = "limbo";
-
-    char computehostname[32];
 
     struct timeval timeout = { 1, 500000 }; // 1.5 seconds
 
 	// Local instrument DB
     // TODO make c static?
+/*
     c = redisConnectWithTimeout(hostname, port, timeout);
     if (c == NULL || c->err) {
         if (c) {
@@ -91,15 +86,14 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         }
         exit(1);
     }
-
+*/
 #if 1
 	// Observatory DB
-    // c_observatory = redisConnectWithTimeout((char *)host_observatory, port_observatory, timeout);
     c_observatory = redisConnectWithTimeout((char *)hostname, port, timeout);
-    if (c == NULL || c->err) {
-        if (c) {
-            hashpipe_error(__FUNCTION__, c->errstr);
-            redisFree(c);
+    if (c_observatory == NULL || c_observatory->err) {
+        if (c_observatory) {
+            hashpipe_error(__FUNCTION__, c_observatory->errstr);
+            redisFree(c_observatory);
         } else {
             hashpipe_error(__FUNCTION__, "Connection error: can't allocate redis context");
         }
@@ -107,8 +101,6 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
     }
 	//rv = redis_get(c_observatory, &reply,"AUTH limbo");
 #endif
-
-	gethostname(computehostname, sizeof(computehostname));
     
 	// Get observatory data
     char query_string[2048] = {0};
@@ -181,7 +173,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         telescope_settings->POINTING_UPDATED = atof(reply->element[4]->str);
     }
 
-    if(c) redisFree(c);       // TODO do I really want to free each time?
+    //if(c) redisFree(c);       // TODO do I really want to free each time?
     if(c_observatory) redisFree(c_observatory);       // TODO do I really want to free each time?
 
     return rv;         
