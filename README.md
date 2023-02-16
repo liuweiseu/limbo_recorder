@@ -91,7 +91,7 @@ We have several versions of file header:
     ```  
   
     2. Ver-0.0.1  
-    The size of file header is defined at the beginning of the file, which is an unsigned int value. **You have to read the first 4 bytes out**, and then you will know the size of file header.   
+    The size of file header is defined at the beginning of the file, which is an unsigned int value. **You have to read the first 4 bytes out**, and then you will know the size of file header( **It doesn't include the first 4 bytes**).   
     Some other information are added to the file header, such as RA, DEC, AZ, EL and so on.
     ```
                SWVer: '0.0.1'
