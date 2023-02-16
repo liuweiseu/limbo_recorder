@@ -3,11 +3,16 @@
 
 #include<stdio.h>
 
-#define FPG_LEN 128
-// Now, the header only contains obs settings, but we may put more parameters here.
+#define FPG_LEN         128
+#define SW_VER          "0.0.1"
+#define VER_STR_LEN     16
+#define HDR_SIZE        1024
+
 typedef struct obs_header{
     double TIME;
     char FPG[FPG_LEN];
+    char SWVER[VER_STR_LEN];
+    unsigned int HDRSIZE;
     unsigned int SAMPLEFREQ;
     unsigned int ACCLEN;
     unsigned int ADCCOARSEGAIN;

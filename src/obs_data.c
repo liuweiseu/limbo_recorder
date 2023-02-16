@@ -8,8 +8,13 @@ void create_file(char *filename){
 }
 
 int write_header(obs_header_t *obs_header){
+    // wirte the file size to the beginning of the file.
+    // it should be a 4B value.
+    fwrite(&(obs_header->HDRSIZE), sizeof(unsigned int), 1, fp);
+    // write json header to the file
     fprintf(fp, "{\n");
-    fprintf(fp, " \"fpg\": \"%s\",         \
+    fprintf(fp, " \"SWVer\":\"%s\",      \
+                  \"fpg\": \"%s\",       \
                   \"Time\": %10f,        \
                   \"SampleFreq\": %4u,   \
                   \"AccLen\": %4u,       \
@@ -26,7 +31,8 @@ int write_header(obs_header_t *obs_header){
                   \"AdcDelay5\": %4u,    \
                   \"AdcDelay6\": %4u,    \
                   \"AdcDelay7\": %4u     \
-                }", obs_header->FPG,        \
+                }", obs_header->SWVER,      \
+                    obs_header->FPG,        \
                     obs_header->TIME,       \
                     obs_header->SAMPLEFREQ, \
                     obs_header->ACCLEN,     \
@@ -44,8 +50,8 @@ int write_header(obs_header_t *obs_header){
                     obs_header->ADCDELAY[6],\
                     obs_header->ADCDELAY[7]
                     );
-    // we use the first 1024 bytes for header
-    return fseek(fp, 1024, SEEK_SET);
+    // we use the first HDR_SIZE bytes for header
+    return fseek(fp, HDR_SIZE + 4, SEEK_SET);
 }
 
 int write_data(void *data, int nbytes){
