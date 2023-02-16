@@ -16,5 +16,5 @@ typedef struct obs_settings{
 }obs_settings_t;
 
 int get_obs_info_from_redis(obs_settings_t * obs_settings, char *hostname, int port);
-
+int set_files_query(char *hostname, int port, char *filename);
 #endif

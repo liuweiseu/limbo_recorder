@@ -206,6 +206,7 @@ static void *run(hashpipe_thread_args_t * args)
                 {
                     write_data(db->block[block_idx].blk_data,SPECTRAS_PER_BLOCK*SPECTRA_FRAME_SIZE);
                     close_file();
+                    set_files_query(REDIS_HOST, REDIS_PORT,recordstatus_ptr->filename);
                     recordstatus_ptr->file_created = 0;
                     recordstatus_ptr->recording = 0;
                 }

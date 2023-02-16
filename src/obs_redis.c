@@ -157,3 +157,67 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 
     return rv;         
 }
+
+int redis_set(redisContext *c, redisReply ** reply, const char * query){
+        int rv = 0;
+    int i;
+    char * errstr;
+
+
+    *reply = (redisReply *)redisCommand(c, query);
+
+    if(*reply == NULL) {
+        errstr = c->errstr;
+        rv = 1;
+    } else if((*reply)->type == REDIS_REPLY_ERROR) {
+        errstr = (*reply)->str;
+        rv = 1;
+    } else if((*reply)->type == REDIS_REPLY_ARRAY) {
+        for(i=0; i < (*reply)->elements; i++) {
+            if(!(*reply)->element[i]->str) {
+                errstr = (char *)"At least one element in the array was empty";
+                rv = 1;
+                break;
+            }
+        }
+    }
+    if(rv) {
+        hashpipe_error(__FUNCTION__, "redis query (%s) returned an error : %s", query, errstr);
+    }
+
+    return(rv); 
+}
+
+int set_files_query(char *hostname, int port, char *filename){
+    redisContext *c;
+    redisContext *c_observatory;
+    redisReply *reply;
+    int rv = 0;
+
+    const char * host_observatory = "localhost";
+    int port_observatory = 6379;
+    const char * host_pw = "limbo";
+
+    char computehostname[32];
+    char query_string[64];
+
+    double mjd_now;  
+
+    struct timeval timeout = { 1, 500000 }; // 1.5 seconds
+
+	// Local instrument DB
+    // TODO make c static?
+    c = redisConnectWithTimeout(hostname, port, timeout);
+    if (c == NULL || c->err) {
+        if (c) {
+            hashpipe_error(__FUNCTION__, c->errstr);
+            redisFree(c);
+        } else {
+            hashpipe_error(__FUNCTION__, "Connection error: can't allocate redis context");
+        }
+        exit(1);
+    }
+    char cmd[128];
+    sprintf(cmd, "LPUSH limbo:raw_pspec_files %s", filename);
+    (redisReply *)redisCommand(c, cmd);
+}
