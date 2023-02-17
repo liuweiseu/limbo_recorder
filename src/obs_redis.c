@@ -66,7 +66,6 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
                             int     port) {
 //----------------------------------------------------------
 
-//   redisContext *c;
     redisContext *c_observatory;
     redisReply *reply;
     int rv = 0;
@@ -75,19 +74,6 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
 
 	// Local instrument DB
     // TODO make c static?
-/*
-    c = redisConnectWithTimeout(hostname, port, timeout);
-    if (c == NULL || c->err) {
-        if (c) {
-            hashpipe_error(__FUNCTION__, c->errstr);
-            redisFree(c);
-        } else {
-            hashpipe_error(__FUNCTION__, "Connection error: can't allocate redis context");
-        }
-        exit(1);
-    }
-*/
-#if 1
 	// Observatory DB
     c_observatory = redisConnectWithTimeout((char *)hostname, port, timeout);
     if (c_observatory == NULL || c_observatory->err) {
@@ -99,8 +85,6 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         }
         exit(1);
     }
-	//rv = redis_get(c_observatory, &reply,"AUTH limbo");
-#endif
     
 	// Get observatory data
     char query_string[2048] = {0};
@@ -125,8 +109,8 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
     if(!rv) rv = redis_get(c_observatory, &reply, query_string);
 	if(!rv)
     {
-		obs_settings->TIME      = atof(reply->element[0]->str);	
-		obs_settings->SAMPLEFREQ= atoi(reply->element[1]->str);
+        obs_settings->TIME      = atof(reply->element[0]->str);	
+        obs_settings->SAMPLEFREQ= atoi(reply->element[1]->str);
         obs_settings->ACCLEN    = atoi(reply->element[2]->str);
         obs_settings->ADCCOARSEGAIN = atoi(reply->element[3]->str);
         obs_settings->FFTSHIFT  = atoi(reply->element[4]->str);
@@ -173,7 +157,6 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         telescope_settings->POINTING_UPDATED = atof(reply->element[4]->str);
     }
 
-    //if(c) redisFree(c);       // TODO do I really want to free each time?
     if(c_observatory) redisFree(c_observatory);       // TODO do I really want to free each time?
 
     return rv;         
