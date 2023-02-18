@@ -156,7 +156,7 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         telescope_settings->POINTING_EL_DEG = atof(reply->element[3]->str);
         telescope_settings->POINTING_UPDATED = atof(reply->element[4]->str);
     }
-
+    freeReplyObject(reply);
     if(c_observatory) redisFree(c_observatory);       // TODO do I really want to free each time?
 
     return rv;         
@@ -196,7 +196,6 @@ int redis_set(redisContext *c, redisReply ** reply, const char * query){
 int set_files_query(char *hostname, int port, char *filename){
 //----------------------------------------------------------
     redisContext *c;
-    redisContext *c_observatory;
     redisReply *reply;
     int rv = 0;
 
@@ -218,5 +217,7 @@ int set_files_query(char *hostname, int port, char *filename){
     }
     sprintf(query_string, "LPUSH limbo:raw_pspec_files %s", filename);
     rv = redis_set(c, &reply, query_string);
+    freeReplyObject(reply);
+    if(c) redisFree(c);
     return rv;
 }
