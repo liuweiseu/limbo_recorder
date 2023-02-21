@@ -5,8 +5,8 @@
 #define COORD_LEN       16
 
 #define DIGITAL_KEY     "OBS_SETTINGS"
-#define ANALOG_KEY      "ANALOG_SETTINGS"
-#define TELESCOPE_KEY   "TELESCOPE_SETTINGS"
+#define ANALOG_KEY      "limbo"
+#define TELESCOPE_KEY   "limbo"
 
 // this is for digital settings
 typedef struct obs_settings{
