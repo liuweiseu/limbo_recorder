@@ -89,7 +89,7 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_header->SAMPLEFREQ  = obs_settings_ptr->SAMPLEFREQ;
     obs_header->SCALING     = obs_settings_ptr->SCALING;
     obs_header->SPECCOEFF   = obs_settings_ptr->SPECCOEFF;
-    obs_header->TIME        = obs_settings_ptr->TIME;
+    //obs_header->TIME        = obs_settings_ptr->TIME;
     memcpy(obs_header->FPG, obs_settings_ptr->FPG, FPG_LEN);
     obs_header->DATASEL     = obs_settings_ptr->DATASEL;
     // get analog parameters
@@ -153,6 +153,8 @@ static void *run(hashpipe_thread_args_t * args)
     uint32_t file_count = 0;
     char filename[128]={0};
     char file_list[VOL_FILE_NUM][128] = {0};
+    obs_header_t obs_header;
+    struct timeval tv_f;
     record_status_t recordstatus;
     record_status_t *recordstatus_ptr = &recordstatus;
     memset(recordstatus_ptr->filename,0,128);
@@ -205,6 +207,9 @@ static void *run(hashpipe_thread_args_t * args)
                 create_filename(recordstatus_ptr->filename,pkt_type);
                 memcpy(file_list[file_count], recordstatus_ptr->filename, strlen(recordstatus_ptr->filename));
                 file_count++;
+		// get the current time, and write it into obs_header->TIME
+		gettimeofday(&tv_f,NULL);
+		obs_header.TIME = tv_f.tv_sec + tv_f.tv_usec/1000000.0;
                 create_file(recordstatus_ptr->filename);
                 recordstatus_ptr->file_created = 1;
                 recordstatus_ptr->recording = 0;
@@ -212,7 +217,7 @@ static void *run(hashpipe_thread_args_t * args)
             if(recordstatus_ptr->recording == 0)
             {
                 // if the data file is created, we need to write header.
-                obs_header_t obs_header;
+                //obs_header_t obs_header;
                 get_snap_settings(&obs_header);
                 write_header(&obs_header);
                 recordstatus_ptr->recording = 1;
