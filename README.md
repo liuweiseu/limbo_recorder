@@ -5,7 +5,7 @@ The code is used for recording data for LIMBO project.
     ```
         mkdir Release
         cd Release
-        cmake .. -DCMAKE_BUILE_TYPE=Release
+        cmake ..
         make
         sudo make install
     ```
