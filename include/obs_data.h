@@ -5,7 +5,7 @@
 
 #define FPG_LEN         128
 #define SW_VER          "0.0.1"
-#define VER_STR_LEN     16
+#define VER_STR_LEN     6
 #define HDR_SIZE        2048
 #define COORD_LEN       16
 typedef struct obs_header{

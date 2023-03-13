@@ -6,10 +6,12 @@ set(LIMBO_INCLUDE include)
 set(LIMBO_SRC src)
 set(LIMBO_SCRIPTS scripts/restart_recorder.sh
                   scripts/stop_recorder.sh)
-
-message("DEST: ${CMAKE_INSTALL_PREFIX}")
-
+set(LIMBO_PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE
+                        GROUP_READ GROUP_EXECUTE
+                        WORLD_READ WORLD_EXECUTE)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -msse4")
+
+message("BUILD TYPE: ${CMAKE_BUILD_TYPE}")
 
 cmake_minimum_required(VERSION 3.10)
 project(${LIMBO_PROJ})
@@ -20,7 +22,9 @@ add_library(${LIMBO_TARGET} SHARED ${SRC_LIST})
 target_link_libraries(${LIMBO_TARGET} ${LIMBO_LIB})
 
 install(TARGETS ${LIMBO_TARGET}
-        LIBRARY DESTINATION lib PERMISSIONS WORLD_EXECUTE)
+        CONFIGURATIONS Release
+        LIBRARY DESTINATION lib PERMISSIONS ${LIMBO_PERMISSIONS})
 
 install(FILES ${LIMBO_SCRIPTS}
-        DESTINATION bin PERMISSIONS WORLD_EXECUTE)
+        CONFIGURATIONS Release
+        DESTINATION bin PERMISSIONS ${LIMBO_PERMISSIONS})
