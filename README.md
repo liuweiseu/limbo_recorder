@@ -3,6 +3,8 @@ The code is used for recording data for LIMBO project.
 ## Getting Start
 1. compile the code
     ```
+        cd Release
+        cmake .. -DCMAKE_BUILE_TYPE=Release
         make
         sudo make install
     ```
