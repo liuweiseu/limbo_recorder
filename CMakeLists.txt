@@ -22,7 +22,6 @@ link_directories(${LIMBO_LIB_DIR})
 add_library(${LIMBO_TARGET} SHARED ${SRC_LIST})
 target_link_libraries(${LIMBO_TARGET} ${LIMBO_LIB})
 set_target_properties(${LIMBO_TARGET} PROPERTIES PREFIX "")
-#set_target_properties(${LIMBO_TARGET} PROPERTIES OUTPUT_NAME limbo.so)
 
 install(TARGETS ${LIMBO_TARGET}
         CONFIGURATIONS Release
