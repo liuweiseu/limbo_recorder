@@ -1,5 +1,6 @@
 set(LIMBO_PROJ limbo_project)
 set(LIMBO_TARGET limbo)
+set(LIMBO_NAME limbo.so)
 set(LIMBO_LIB m rt hashpipe hiredis stdc++)
 set(LIMBO_LIB_DIR /usr/local/lib)
 set(LIMBO_INCLUDE include)
@@ -20,11 +21,15 @@ include_directories(${LIMBO_INCLUDE})
 link_directories(${LIMBO_LIB_DIR})
 add_library(${LIMBO_TARGET} SHARED ${SRC_LIST})
 target_link_libraries(${LIMBO_TARGET} ${LIMBO_LIB})
+set_target_properties(${LIMBO_TARGET} PROPERTIES PREFIX "")
+#set_target_properties(${LIMBO_TARGET} PROPERTIES OUTPUT_NAME limbo.so)
 
 install(TARGETS ${LIMBO_TARGET}
         CONFIGURATIONS Release
-        LIBRARY DESTINATION lib PERMISSIONS ${LIMBO_PERMISSIONS})
+        LIBRARY DESTINATION lib
+        PERMISSIONS ${LIMBO_PERMISSIONS})
 
 install(FILES ${LIMBO_SCRIPTS}
         CONFIGURATIONS Release
-        DESTINATION bin PERMISSIONS ${LIMBO_PERMISSIONS})
+        DESTINATION bin
+        PERMISSIONS ${LIMBO_PERMISSIONS})

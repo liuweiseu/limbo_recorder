@@ -44,7 +44,7 @@ else
 fi
 
 cd ${limbo_data_dir}
-hashpipe -p liblimbo.so -I 0 net_thread output_thread  -o PKT_TYPE=0 \
+hashpipe -p limbo.so -I 0 net_thread output_thread  -o PKT_TYPE=0 \
                                                     -o BINDHOST=$spectra_eth \
                                                     1> ${hostname}.spectra.out.${log_timestamp} \
                                                     2> ${hostname}.spectra.err.${log_timestamp} &
@@ -52,7 +52,7 @@ echo "Instance 0 started."
 echo 'Sepctra data path:' `pwd`
 
 cd /mnt/ramdisk
-hashpipe -p liblimbo.so -I 1 net_thread output_thread  -o PKT_TYPE=2 \
+hashpipe -p limbo.so -I 1 net_thread output_thread  -o PKT_TYPE=2 \
                                                     -o BINDHOST=$voltage_eth \
                                                     1> ${hostname}.voltage.out.${log_timestamp} \
                                                     2> ${hostname}.voltage.err.${log_timestamp} &
