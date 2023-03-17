@@ -2,7 +2,7 @@
 #define _OBS_REDIS_H
 
 #define FPG_LEN         128
-#define COORD_LEN       16
+#define COORD_LEN       32
 
 #define DIGITAL_KEY     "OBS_SETTINGS"
 #define ANALOG_KEY      "limbo"

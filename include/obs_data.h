@@ -7,7 +7,7 @@
 #define SW_VER          "0.0.1"
 #define VER_STR_LEN     16
 #define HDR_SIZE        2048
-#define COORD_LEN       16
+#define COORD_LEN       32
 typedef struct obs_header{
     double TIME;
     char FPG[FPG_LEN];
