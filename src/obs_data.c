@@ -33,7 +33,7 @@ int write_header(obs_header_t *obs_header){
                   \"AdcDelay7\": %4u,     \
                   \"RF_Lo_Hz\" : %10u,    \
                   \"Target_RA_Deg\":\"%s\",  \
-                  \"Target_EL_Deg\":\"%s\",  \
+                  \"Target_DEC_Deg\":\"%s\",  \
                   \"Pointing_AZ\": %2.2f,    \
                   \"Pointing_EL\": %2.2f,    \
                   \"Pointing_Updated\": %10f \
