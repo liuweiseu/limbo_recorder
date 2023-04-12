@@ -17,7 +17,7 @@
 #define CACHE_ALIGNMENT         8
 #define N_BLOCKS                64 
 
-#define SPECTRA_SIZE            2048
+#define SPECTRA_SIZE            4096
 #define SPECTRAS_PER_BLOCK      (4*1024) 
 #define SPECTRA_PKT_SIZE        (SPECTRA_SIZE * sizeof(unsigned short) + 8)
 #define SPECTRA_FRAME_SIZE      (SPECTRA_PKT_SIZE + 8*2)

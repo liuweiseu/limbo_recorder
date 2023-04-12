@@ -4,7 +4,7 @@
 #include<stdio.h>
 
 #define FPG_LEN         128
-#define SW_VER          "0.0.1"
+#define SW_VER          "0.0.2"
 #define VER_STR_LEN     16
 #define HDR_SIZE        2048
 #define COORD_LEN       32
