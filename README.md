@@ -119,8 +119,9 @@ We have several versions of file header:
          Pointing_EL: 90
     Pointing_Updated: 1676526303.31059
     ```
-    ***Note***: To recognize the file version, you can read the first byte from the data file. If it's 123("{"), that's the ver-0.0.0 file.   
-    **Note:** Please use `limbo_500_2022-12-03_1749.fpg` on SNAP board.  
+    **Note**:  
+    (1) To recognize the file version, you can read the first byte from the data file. If it's 123("{"), that's the ver-0.0.0 file.   
+    (2) Please use `limbo_500_2022-12-03_1749.fpg` on SNAP board.  
     3. Ver-0.0.2
     In this version of software, we sperated the sepctra data from 2 pols, so the data length in each packet is 4096, instead of 2048. The `SWVer` in the file header is upgraded to `0.0.2`. Other info in the file header are not changed.
     ```
