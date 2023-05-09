@@ -22,7 +22,7 @@ You need to set three environment variables:
     ```
         restart_recorder.sh
     ```
-When you run this script, a "data" directory will be created defined by "LIMBO_DATA_DIR", which is used for storing spectra data. Voltage data files will be created in ramdisk(/mnt/ramdisk). A new file will be created every second. The max number of the voltage data files is 16 by default. The oldest file will be deleted automatically, when the file number reaches to the max. The max number of voltage file names is defined in databuf.h
+    When you run this script, a "data" directory will be created defined by "LIMBO_DATA_DIR", which is used for storing spectra data. Voltage data files will be created in ramdisk(/mnt/ramdisk). A new file will be created every second. The max number of the voltage data files is 16 by default. The oldest file will be deleted automatically, when the file number reaches to the max. The max number of voltage file names is defined in databuf.h  
     ```
         #define VOL_FILE_NUM            32
     ```  
