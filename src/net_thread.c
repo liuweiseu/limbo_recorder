@@ -43,7 +43,7 @@ static int init(hashpipe_thread_args_t * args){
     // Get info from status buffer if present
     hgets(st.buf, "BINDHOST", 128, bindhost);
     //hgeti4(st.buf, "BINDPORT", &bindport);
-
+    printf("BINDHOST: %s\n", bindhost);
     // Store bind host/port info and other info in status buffer
 	hputi4(st.buf, "BINDPORT", bindport);
     hputi8(st.buf, "NPACKETS", 0);

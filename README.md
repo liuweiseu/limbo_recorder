@@ -24,7 +24,7 @@ You need to set three environment variables:
     ```
 When you run this script, a "data" directory will be created defined by "LIMBO_DATA_DIR", which is used for storing spectra data. Voltage data files will be created in ramdisk(/mnt/ramdisk). A new file will be created every second. The max number of the voltage data files is 16 by default. The oldest file will be deleted automatically, when the file number reaches to the max. The max number of voltage file names is defined in databuf.h
     ```
-        #define VOL_FILE_NUM            16
+        #define VOL_FILE_NUM            32
     ```  
 ***TO-DO***: set port number dynamically. 
 
@@ -32,13 +32,21 @@ When you run this script, a "data" directory will be created defined by "LIMBO_D
     ```
         enable_record.sh
     ```
-When you run this script, a new data file will be created in the "data" directory, and it stores 4096 spectra data.  
+    When you run this script, a new data file will be created in the "data" directory, and it stores 4096 spectra data.  
+    ```
+        enable_vol_record.sh
+    ```
+    When you run this script, a new voltage file will be created in /mnt/ramdisk. The max number of voltage files is define by `VOL_FILE_NUM`.  
 
 4. Disable recording
     ```
         disbale_record.sh
     ```
-This script will stop recording data. Once you run ```enable_record.sh``` again, a new data file will be created.  
+    This script will stop recording spectra data. Once you run ```enable_record.sh``` again, a new spectra data file will be created.  
+    ```
+        disable_vol_record.sh
+    ```
+    This script will stop recording voltage data. Once you run ```enable_vol_record.sh``` again, a new voltage data file will be created.  
 
 5. Stop the data Recorder
     ```
