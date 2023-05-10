@@ -103,7 +103,7 @@ We have several versions of file header:
     Some other information are added to the file header, such as RA, DEC, AZ, EL and so on.
     ```
                SWVer: '0.0.1'
-                 fpg: 'limbo_500_2022-12-03_1749.fpg'
+                 fpg: 'limbo_500_m_2023-05-09_1203.fpg'
                 Time: 1675998927.58758
           SampleFreq: 500
               AccLen: 127
