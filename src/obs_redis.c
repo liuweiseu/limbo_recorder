@@ -105,7 +105,9 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
                                                        AdcDelay6    \
                                                        AdcDelay7    \
                                                        fpg          \
-                                                       data_sel");
+                                                       data_sel     \
+                                                       Pol0EqCoeff  \
+                                                       Pol1EqCoeff");
     if(!rv) rv = redis_get(c_observatory, &reply, query_string);
 	if(!rv)
     {
@@ -127,6 +129,8 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         memset(obs_settings->FPG,0,FPG_LEN);
         memcpy(obs_settings->FPG,reply->element[15]->str,reply->element[15]->len);
         obs_settings->DATASEL = atoi(reply->element[16]->str);
+        obs_settings->POL0EQCOEFF = atoi(reply->element[17]->str);
+        obs_settings->POL1EQCOEFF = atoi(reply->element[18]->str);
 	}
 
     // get analog settings

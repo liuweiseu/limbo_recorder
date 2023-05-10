@@ -19,6 +19,8 @@ typedef struct obs_settings{
     unsigned int DATASEL;
     unsigned int SCALING;
     unsigned int SPECCOEFF;
+    unsigned int POL0EQCOEFF;
+    unsigned int POL1EQCOEFF;
     unsigned int ADCDELAY[8];
 }obs_settings_t;
 

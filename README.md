@@ -97,8 +97,8 @@ We have several versions of file header:
         "AdcDelay7": 5
         }
     ```  
-  
-    2. Ver-0.0.1  
+    
+    3. Ver-0.0.1  
     The size of file header is defined at the beginning of the file, which is an unsigned int value. **You have to read the first 4 bytes out**, and then you will know the size of file header( **It doesn't include the first 4 bytes**).   
     Some other information are added to the file header, such as RA, DEC, AZ, EL and so on.
     ```
@@ -128,6 +128,15 @@ We have several versions of file header:
     Pointing_Updated: 1676526303.31059
     ```
     ***Note***: To recognize the file version, you can read the first byte from the data file. If it's 123("{"), that's the ver-0.0.0 file. 
+
+    2. Ver-0.0.3  
+    We added `Pol0EqCoeff` and `Pol1EqCoeff` to the file header,which are used for voltage data. The new items in the file header is shown below:
+    ```
+               SWVer: '0.0.3'
+                 fpg: 'limbo_500_m_2023-05-09_1203.fpg'
+         Pol0EqCoeff: 59904
+         Pol1EqCoeff: 59904
+    ```
 * data in the file  
 Each data frame contains three part:  
 1. The time when we received the packets, including second part and micro second part.

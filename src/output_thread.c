@@ -89,6 +89,8 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_header->SAMPLEFREQ  = obs_settings_ptr->SAMPLEFREQ;
     obs_header->SCALING     = obs_settings_ptr->SCALING;
     obs_header->SPECCOEFF   = obs_settings_ptr->SPECCOEFF;
+    obs_header->POL0EQCOEFF = obs_settings_ptr->POL0EQCOEFF;
+    obs_header->POL1EQCOEFF = obs_settings_ptr->POL1EQCOEFF;
     //obs_header->TIME        = obs_settings_ptr->TIME;
     memcpy(obs_header->FPG, obs_settings_ptr->FPG, FPG_LEN);
     obs_header->DATASEL     = obs_settings_ptr->DATASEL;

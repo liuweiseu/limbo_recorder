@@ -22,6 +22,8 @@ int write_header(obs_header_t *obs_header){
                   \"FFTShift\": %5u,     \
                   \"DataSel\": %4u,      \
                   \"Scaling\": %4u,      \
+                  \"Pol0EqCoeff\": %4u,  \
+                  \"Pol1EqCoeff\": %4u,  \
                   \"SpecCoeff\": %4u,    \
                   \"AdcDelay0\": %4u,    \
                   \"AdcDelay1\": %4u,    \
@@ -46,6 +48,8 @@ int write_header(obs_header_t *obs_header){
                     obs_header->FFTSHIFT,   \
                     obs_header->DATASEL,    \
                     obs_header->SCALING,    \
+                    obs_header->POL0EQCOEFF,\
+                    obs_header->POL1EQCOEFF,\
                     obs_header->SPECCOEFF,  \
                     obs_header->ADCDELAY[0],\
                     obs_header->ADCDELAY[1],\

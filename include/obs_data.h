@@ -4,7 +4,7 @@
 #include<stdio.h>
 
 #define FPG_LEN         128
-#define SW_VER          "0.0.1"
+#define SW_VER          "0.0.3"
 #define VER_STR_LEN     16
 #define HDR_SIZE        2048
 #define COORD_LEN       32
@@ -20,6 +20,8 @@ typedef struct obs_header{
     unsigned int DATASEL;
     unsigned int SCALING;
     unsigned int SPECCOEFF;
+    unsigned int POL0EQCOEFF;
+    unsigned int POL1EQCOEFF;
     unsigned int ADCDELAY[8];
     unsigned int RF_LO_HZ;
     char TARGET_RA_DEG[COORD_LEN];
