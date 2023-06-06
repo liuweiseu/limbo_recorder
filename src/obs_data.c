@@ -34,6 +34,7 @@ int write_header(obs_header_t *obs_header){
                   \"AdcDelay6\": %4u,    \
                   \"AdcDelay7\": %4u,     \
                   \"RF_Lo_Hz\" : %10u,    \
+                  \"Source\":\"%s\",  \
                   \"Target_RA_Deg\":\"%s\",  \
                   \"Target_DEC_Deg\":\"%s\",  \
                   \"Pointing_AZ\": %2.2f,    \
@@ -60,6 +61,7 @@ int write_header(obs_header_t *obs_header){
                     obs_header->ADCDELAY[6],\
                     obs_header->ADCDELAY[7],\
                     obs_header->RF_LO_HZ,   \
+                    obs_header->SOURCE,\
                     obs_header->TARGET_RA_DEG,\
                     obs_header->TARGET_DEC_DEG,\
                     obs_header->POINTING_AZ_DEG,\

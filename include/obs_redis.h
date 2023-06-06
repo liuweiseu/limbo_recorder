@@ -3,6 +3,7 @@
 
 #define FPG_LEN         128
 #define COORD_LEN       32
+#define SOURCE_LEN      COORD_LEN
 
 #define DIGITAL_KEY     "OBS_SETTINGS"
 #define ANALOG_KEY      "limbo"
@@ -33,6 +34,7 @@ typedef struct ana_settings{
 typedef struct telescope_settings{
     char TARGET_RA_DEG[COORD_LEN];
     char TARGET_DEC_DEG[COORD_LEN];
+    char SOURCE[SOURCE_LEN];
     double POINTING_AZ_DEG;
     double POINTING_EL_DEG;
     double POINTING_UPDATED;

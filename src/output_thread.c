@@ -102,6 +102,7 @@ static void get_snap_settings(obs_header_t *obs_header)
     obs_header->POINTING_AZ_DEG = telescope_settings_ptr->POINTING_AZ_DEG;
     obs_header->POINTING_EL_DEG = telescope_settings_ptr->POINTING_EL_DEG;
     obs_header->POINTING_UPDATED= telescope_settings_ptr->POINTING_UPDATED;
+    memcpy(obs_header->SOURCE, telescope_settings_ptr->SOURCE, SOURCE_LEN);
 }
 
 /*

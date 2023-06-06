@@ -148,7 +148,8 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
                                                          Target_DEC_Deg \
                                                          Pointing_AZ \
                                                          Pointing_EL \
-                                                         Pointing_Updated");
+                                                         Pointing_Updated \
+                                                         Source");
     if(!rv) rv = redis_get(c_observatory, &reply, query_string);
     if(!rv)
     {
@@ -159,6 +160,8 @@ int get_obs_info_from_redis(obs_settings_t * obs_settings,
         telescope_settings->POINTING_AZ_DEG = atof(reply->element[2]->str);
         telescope_settings->POINTING_EL_DEG = atof(reply->element[3]->str);
         telescope_settings->POINTING_UPDATED = atof(reply->element[4]->str);
+        memset(telescope_settings->SOURCE,0,SOURCE_LEN);
+        memcpy(telescope_settings->SOURCE, reply->element[5]->str, reply->element[5]->len);
     }
     freeReplyObject(reply);
     if(c_observatory) redisFree(c_observatory);       // TODO do I really want to free each time?

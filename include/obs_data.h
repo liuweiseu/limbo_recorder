@@ -4,10 +4,11 @@
 #include<stdio.h>
 
 #define FPG_LEN         128
-#define SW_VER          "0.0.3"
+#define SW_VER          "0.0.4"
 #define VER_STR_LEN     16
 #define HDR_SIZE        2048
 #define COORD_LEN       32
+#define SOURCE_LEN      COORD_LEN
 typedef struct obs_header{
     double TIME;
     char FPG[FPG_LEN];
@@ -29,6 +30,7 @@ typedef struct obs_header{
     double POINTING_AZ_DEG;
     double POINTING_EL_DEG;
     double POINTING_UPDATED;
+    char SOURCE[SOURCE_LEN];
 }obs_header_t;
 
 typedef struct record_status{

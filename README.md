@@ -137,6 +137,13 @@ We have several versions of file header:
          Pol0EqCoeff: 59904
          Pol1EqCoeff: 59904
     ```
+
+    3. Ver-0.0.4
+    We added `Source` to the file header:
+    ```
+               SWVer: '0.0.4'
+              Source: 'Crab'
+    ```
 * data in the file  
 Each data frame contains three part:  
 1. The time when we received the packets, including second part and micro second part.
